@@ -26,20 +26,25 @@
             </h1>
 
             <!-- Article Meta Info -->
-            <div style="display: flex; flex-wrap: wrap; gap: 1.5rem; margin-bottom: 2rem; color: var(--text-secondary); font-size: 1rem;">
-                <span style="display: flex; align-items: center; gap: 0.5rem;">
-                    👤 {{ $article->user->name }}
-                </span>
-                <span style="display: flex; align-items: center; gap: 0.5rem;">
-                    📅 {{ $article->date->format('d F Y') }}
-                </span>
-                <span style="display: flex; align-items: center; gap: 0.5rem;">
-                    🕒 {{ $article->read_time }}
-                </span>
-                <span style="display: flex; align-items: center; gap: 0.5rem;">
-                    👁️ {{ number_format($article->views) }} views
-                </span>
-            </div>
+                <div class="detail-info">
+                    <span class="detail-author">
+                        <i data-lucide="user"></i>
+                        {{ $article->user->name }}
+                    </span>
+                    <span class="detail-date">
+                        <i data-lucide="calendar"></i>
+                        {{ $article->date->format('d F Y') }}
+                    </span>
+                    <span class="detail-time">
+                        <i data-lucide="clock"></i>
+                        {{ $article->read_time }}
+                    </span>
+                    <span class="detail-views">
+                        <i data-lucide="eye"></i>
+                        {{ number_format($article->views) }} views
+                    </span>
+                </div>
+
 
             <!-- Featured Image -->
         <div style="margin: 2rem 0; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);">
@@ -73,20 +78,26 @@
                 </div>
 
                 <!-- Share Buttons -->
-                <div style="display: flex; align-items: center; gap: 0.75rem;">
-                    <span style="color: var(--text-secondary); font-weight: 600;">Share:</span>
-                    <a href="#" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: var(--bg-secondary); border-radius: 50%; text-decoration: none; font-size: 1.25rem; transition: all 0.3s ease;">📘</a>
-                    <a href="#" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: var(--bg-secondary); border-radius: 50%; text-decoration: none; font-size: 1.25rem; transition: all 0.3s ease;">🐦</a>
-                    <a href="#" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: var(--bg-secondary); border-radius: 50%; text-decoration: none; font-size: 1.25rem; transition: all 0.3s ease;">💼</a>
+                <div class="detail-share">
+                    <span>Share this article:</span>
+                    <a href="#" class="share-btn">
+                        <i data-lucide="facebook"></i>
+                    </a>
+                    <a href="#" class="share-btn">
+                        <i data-lucide="twitter"></i>
+                    </a>
+                    <a href="#" class="share-btn">
+                        <i data-lucide="linkedin"></i>
+                    </a>
                 </div>
+
             </div>
 
             <!-- Edit Button (for admin) -->
-            <div style="margin-top: 2rem; display: flex; gap: 1rem;">
-                <a href="{{ route('articles.edit', $article) }}" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.875rem 2rem; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.3s ease;">
-                    <span>✏️</span> Edit Article
-                </a>
-            </div>
+            <a href="{{ route('articles.edit', $article) }}" style="...">
+                <i data-lucide="edit"></i>
+                <span>Edit Article</span>
+            </a>
 
             <!-- Comments Section -->
             @if($article->comments->count() > 0)
