@@ -3,16 +3,18 @@
 @section('title', $article->title . ' - ArticleHub')
 
 @section('content')
-<section class="articles-section" style="padding-top: 100px;">
+{{-- Remove inline style padding-top: 100px --}}
+<section class="articles-section">
     <div class="container">
         <!-- Back Button -->
         <div style="margin-bottom: 2rem;">
-            <a href="{{ route('articles.index') }}" class="back-btn" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.5rem; background: var(--bg-secondary); border: 2px solid var(--border-color); border-radius: 8px; text-decoration: none; color: var(--text-primary); font-weight: 600; transition: all 0.3s ease;">
-                <span>←</span> Back to Articles
+            <a href="{{ route('articles.index') }}" class="back-btn">
+                <i data-lucide="arrow-left"></i>
+                <span>Back to Articles</span>
             </a>
         </div>
 
-        <article class="article-detail" style="max-width: 900px; margin: 0 auto;">
+        <article class="article-detail">
             <!-- Category Badge -->
             <div style="margin-bottom: 1rem;">
                 <span style="display: inline-block; padding: 0.5rem 1rem; background: {{ $article->category->color }}; color: white; border-radius: 20px; font-size: 0.875rem; font-weight: 600;">
@@ -26,35 +28,35 @@
             </h1>
 
             <!-- Article Meta Info -->
-                <div class="detail-info">
-                    <span class="detail-author">
-                        <i data-lucide="user"></i>
-                        {{ $article->user->name }}
-                    </span>
-                    <span class="detail-date">
-                        <i data-lucide="calendar"></i>
-                        {{ $article->date->format('d F Y') }}
-                    </span>
-                    <span class="detail-time">
-                        <i data-lucide="clock"></i>
-                        {{ $article->read_time }}
-                    </span>
-                    <span class="detail-views">
-                        <i data-lucide="eye"></i>
-                        {{ number_format($article->views) }} views
-                    </span>
-                </div>
-
+            <div style="display: flex; flex-wrap: wrap; gap: 1.5rem; margin-bottom: 2rem; color: var(--text-secondary); font-size: 1rem;">
+                <span style="display: flex; align-items: center; gap: 0.5rem;">
+                    <i data-lucide="user"></i>
+                    {{ $article->user->name }}
+                </span>
+                <span style="display: flex; align-items: center; gap: 0.5rem;">
+                    <i data-lucide="calendar"></i>
+                    {{ $article->date->format('d F Y') }}
+                </span>
+                <span style="display: flex; align-items: center; gap: 0.5rem;">
+                    <i data-lucide="clock"></i>
+                    {{ $article->read_time }}
+                </span>
+                <span style="display: flex; align-items: center; gap: 0.5rem;">
+                    <i data-lucide="eye"></i>
+                    {{ number_format($article->views) }} views
+                </span>
+            </div>
 
             <!-- Featured Image -->
-        <div style="margin: 2rem 0; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);">
-             <img 
-        src="{{ asset('storage/' . $article->image) }}" 
-        alt="{{ $article->title }}" 
-        style="width: 100%; height: auto; display: block;" >
-        </div>
+            <div style="margin: 2rem 0; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);">
+                <img 
+                    src="{{ asset('storage/' . $article->image) }}" 
+                    alt="{{ $article->title }}" 
+                    style="width: 100%; height: auto; display: block;"
+                >
+            </div>
 
-            <!-- Article Summary (Highlighted) -->
+            <!-- Article Summary -->
             <div style="padding: 1.5rem; background: var(--bg-secondary); border-left: 4px solid {{ $article->category->color }}; border-radius: 8px; margin: 2rem 0;">
                 <p style="font-size: 1.25rem; color: var(--text-primary); font-weight: 500; line-height: 1.8; margin: 0;">
                     {{ $article->summary }}
@@ -78,8 +80,8 @@
                 </div>
 
                 <!-- Share Buttons -->
-                <div class="detail-share">
-                    <span>Share this article:</span>
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <span style="color: var(--text-secondary); font-weight: 600;">Share:</span>
                     <a href="#" class="share-btn">
                         <i data-lucide="facebook"></i>
                     </a>
@@ -90,20 +92,22 @@
                         <i data-lucide="linkedin"></i>
                     </a>
                 </div>
-
             </div>
 
-            <!-- Edit Button (for admin) -->
-            <a href="{{ route('articles.edit', $article) }}" style="...">
-                <i data-lucide="edit"></i>
-                <span>Edit Article</span>
-            </a>
+            <!-- Edit Button -->
+            <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+                <a href="{{ route('articles.edit', $article) }}" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.875rem 2rem; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.3s ease;">
+                    <i data-lucide="edit"></i>
+                    <span>Edit Article</span>
+                </a>
+            </div>
 
             <!-- Comments Section -->
             @if($article->comments->count() > 0)
             <div style="margin-top: 4rem;">
                 <h3 style="font-size: 2rem; font-weight: 700; color: var(--text-primary); margin-bottom: 2rem;">
-                    💬 Comments ({{ $article->comments->count() }})
+                    <i data-lucide="message-circle"></i>
+                    Comments ({{ $article->comments->count() }})
                 </h3>
                 
                 @foreach($article->comments()->whereNull('parent_id')->get() as $comment)
