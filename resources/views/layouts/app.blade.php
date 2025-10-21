@@ -64,9 +64,9 @@
                 <button class="search-toggle" id="searchToggle" aria-label="Toggle search">
                     <i data-lucide="search"></i>
                 </button>
-                <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+                {{-- <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
                     <i data-lucide="menu" id="navToggleIcon"></i>
-                </button>
+                </button> --}}
             </div>
         </div>
 
