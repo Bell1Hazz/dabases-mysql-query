@@ -1903,4 +1903,26 @@ label.form-label::after {
     background: var(--bg-primary);
     border-color: var(--primary-color);
     transform: translateX(-5px);
+}/* ===== RESPONSIVE FIXES ===== */
+@media (max-width: 768px) {
+    .header {
+        height: 60px;
+    }
+    
+    .main {
+        padding-top: 60px;
+    }
+    
+    .articles-section {
+        padding: 1rem 0;
+    }
+    
+    .back-btn {
+        font-size: 0.875rem;
+        padding: 0.5rem 1rem;
+    }
+    
+    article h1 {
+        font-size: 2rem !important;
+    }
 }
