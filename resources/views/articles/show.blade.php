@@ -150,6 +150,12 @@
 </section>
 @endsection
 
+@push('scripts')
+<script>
+    lucide.createIcons();
+</script>
+@endpush
+
 @push('styles')
 <style>
 /* Responsive untuk mobile */
