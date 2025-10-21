@@ -5,68 +5,76 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     
-    {{-- Preconnect untuk external resources --}}
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    
-    {{-- DNS Prefetch untuk performance --}}
-    <link rel="dns-prefetch" href="//cdn.example.com">
+    <link rel="preconnect" href="{{ url('/') }}">
+    <link rel="dns-prefetch" href="{{ url('/') }}">
     
     <title>@yield('title', 'ArticleHub - Latest Articles')</title>
     
-    {{-- CSS dengan cache busting --}}
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}?v={{ config('app.asset_version', '1.0') }}">
+    {{-- Lucide Icons CDN --}}
+    <script src="https://unpkg.com/lucide@latest"></script>
     
-    {{-- Preload critical resources --}}
-    <link rel="preload" href="{{ asset('css/style.css') }}" as="style">
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     
     @stack('styles')
-
-    {{-- Performance monitoring (optional) --}}
-    <script>
-        // Catat waktu navigation start
-        window.navigationStart = performance.now();
-    </script>
 </head>
 <body>
     <header class="header">
         <div class="container">
+            {{-- Logo dengan Image --}}
             <div class="logo">
-                <a href="{{ route('articles.index') }}" style="text-decoration: none; color: inherit;">
-                    <span>📰 ArticleHub</span>
+                <a href="{{ route('articles.index') }}" class="logo-link">
+                    <img src="{{ asset('images/logo-articlehub.png') }}" alt="ArticleHub Logo" class="logo-img">
+                    <span class="logo-text">ArticleHub</span>
                 </a>
             </div>
             
             <nav class="nav-menu" id="navMenu">
                 <ul class="nav-list">
                     <li class="nav-item">
-                        <a href="{{ route('articles.index') }}" class="nav-link {{ request()->routeIs('articles.index') ? 'active' : '' }}">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{ route('articles.index') }}#articles" class="nav-link">Articles</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{ route('articles.create') }}" class="nav-link {{ request()->routeIs('articles.create') ? 'active' : '' }}">
-                            ➕ Add Article
+                        <a href="{{ route('articles.index') }}" class="nav-link {{ request()->routeIs('articles.index') ? 'active' : '' }}">
+                            <i data-lucide="home" class="nav-icon"></i>
+                            <span>Home</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="{{ route('articles.index') }}#about" class="nav-link">About Us</a>
+                        <a href="{{ route('articles.index') }}#articles" class="nav-link">
+                            <i data-lucide="newspaper" class="nav-icon"></i>
+                            <span>Articles</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('articles.create') }}" class="nav-link {{ request()->routeIs('articles.create') ? 'active' : '' }}">
+                            <i data-lucide="plus-circle" class="nav-icon"></i>
+                            <span>Add Article</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('articles.index') }}#about" class="nav-link">
+                            <i data-lucide="info" class="nav-icon"></i>
+                            <span>About Us</span>
+                        </a>
                     </li>
                 </ul>
             </nav>
 
             <div class="nav-actions">
-                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">🌙</button>
-                <button class="search-toggle" id="searchToggle" aria-label="Toggle search">🔍</button>
-                <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">☰</button>
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                    <i data-lucide="moon" id="themeIcon"></i>
+                </button>
+                <button class="search-toggle" id="searchToggle" aria-label="Toggle search">
+                    <i data-lucide="search"></i>
+                </button>
+                <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+                    <i data-lucide="menu" id="navToggleIcon"></i>
+                </button>
             </div>
         </div>
 
-        <!-- Search Bar -->
+        {{-- Search Bar --}}
         <div class="search-bar" id="searchBar">
             <div class="container">
                 <form action="{{ route('articles.index') }}" method="GET" class="search-input-wrapper">
+                    <i data-lucide="search" class="search-icon"></i>
                     <input 
                         type="text" 
                         name="search" 
@@ -75,7 +83,9 @@
                         value="{{ request('search') }}"
                         aria-label="Search articles"
                     >
-                    <button type="submit" class="search-btn" aria-label="Submit search">🔍</button>
+                    <button type="submit" class="search-btn" aria-label="Submit search">
+                        <i data-lucide="arrow-right"></i>
+                    </button>
                 </form>
             </div>
         </div>
@@ -86,7 +96,8 @@
             <div class="alert-container">
                 <div class="container">
                     <div class="alert alert-success" role="alert">
-                        <span>✓</span> {{ session('success') }}
+                        <i data-lucide="check-circle"></i>
+                        <span>{{ session('success') }}</span>
                     </div>
                 </div>
             </div>
@@ -96,7 +107,8 @@
             <div class="alert-container">
                 <div class="container">
                     <div class="alert alert-error" role="alert">
-                        <span>✕</span> {{ session('error') }}
+                        <i data-lucide="x-circle"></i>
+                        <span>{{ session('error') }}</span>
                     </div>
                 </div>
             </div>
@@ -110,14 +122,23 @@
             <div class="footer-content">
                 <div class="footer-section">
                     <div class="footer-logo">
-                        <span>📰 ArticleHub</span>
+                        <img src="{{ asset('images/logo-articlehub.png') }}" alt="ArticleHub Logo" class="footer-logo-img">
+                        <span class="footer-logo-text">ArticleHub</span>
                     </div>
                     <p>Platform artikel terbaik untuk semua topik menarik dan informatif.</p>
                     <div class="social-links">
-                        <a href="#" class="social-link" aria-label="Facebook">📘</a>
-                        <a href="#" class="social-link" aria-label="Twitter">🐦</a>
-                        <a href="#" class="social-link" aria-label="Instagram">📷</a>
-                        <a href="#" class="social-link" aria-label="LinkedIn">💼</a>
+                        <a href="#" class="social-link" aria-label="Facebook">
+                            <i data-lucide="facebook"></i>
+                        </a>
+                        <a href="#" class="social-link" aria-label="Twitter">
+                            <i data-lucide="twitter"></i>
+                        </a>
+                        <a href="#" class="social-link" aria-label="Instagram">
+                            <i data-lucide="instagram"></i>
+                        </a>
+                        <a href="#" class="social-link" aria-label="Linkedin">
+                            <i data-lucide="linkedin"></i>
+                        </a>
                     </div>
                 </div>
                 
@@ -134,28 +155,35 @@
                 <div class="footer-section">
                     <h3>Categories</h3>
                     <ul class="footer-links">
-                        <li><a href="{{ route('articles.index', ['category' => 'technology']) }}">Technology</a></li>
-                        <li><a href="{{ route('articles.index', ['category' => 'design']) }}">Design</a></li>
-                        <li><a href="{{ route('articles.index', ['category' => 'business']) }}">Business</a></li>
+                        @foreach(\App\Models\Category::limit(5)->get() as $category)
+                            <li>
+                                <a href="{{ route('articles.index', ['category' => $category->slug]) }}">
+                                    {{ $category->name }}
+                                </a>
+                            </li>
+                        @endforeach
                     </ul>
                 </div>
                 
-               <div class="footer-section">
-    <h3>Categories</h3>
-    <ul class="footer-links">
-        @foreach(\App\Models\Category::limit(5)->get() as $category)
-            <li>
-                <a href="{{ route('articles.index', ['category' => $category->slug]) }}">
-                    {{ $category->name }}
-                </a>
-            </li>
-        @endforeach
-    </ul>
-</div>
+                <div class="footer-section">
+                    <h3>Newsletter</h3>
+                    <p>Berlangganan untuk mendapat artikel terbaru</p>
+                    <div class="newsletter-form">
+                        <input 
+                            type="email" 
+                            placeholder="Email anda..." 
+                            id="newsletterEmail"
+                            aria-label="Newsletter email"
+                        >
+                        <button type="submit" id="subscribeBtn" aria-label="Subscribe">
+                            <i data-lucide="send"></i>
+                        </button>
+                    </div>
+                </div>
             </div>
             
             <div class="footer-bottom">
-                <p>&copy; 2025 ArticleHub. All rights reserved.</p>
+                <p>© 2025 ArticleHub. All rights reserved.</p>
                 <div class="footer-bottom-links">
                     <a href="#">Privacy Policy</a>
                     <a href="#">Terms of Service</a>
@@ -164,26 +192,15 @@
         </div>
     </footer>
 
-    {{-- Defer script loading untuk performance --}}
-    <script defer src="{{ asset('js/app.js') }}?v={{ config('app.asset_version', '1.0') }}"></script>
-    @stack('scripts')
-
-    {{-- Lazy load analytics/tracking scripts --}}
+    <script defer src="{{ asset('js/app.js') }}"></script>
+    
+    {{-- Initialize Lucide Icons --}}
     <script>
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initPerformanceMonitoring);
-        } else {
-            initPerformanceMonitoring();
-        }
-
-        function initPerformanceMonitoring() {
-            // Log performance metrics
-            window.addEventListener('load', function() {
-                const perfData = window.performance.timing;
-                const pageLoadTime = perfData.loadEventEnd - perfData.navigationStart;
-                console.log('Page Load Time:', pageLoadTime + 'ms');
-            });
-        }
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
+        });
     </script>
+    
+    @stack('scripts')
 </body>
 </html>
