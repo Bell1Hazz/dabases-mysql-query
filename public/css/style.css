@@ -1855,3 +1855,52 @@ label.form-label::after {
     color: #ef4444;
     font-size: 0.875rem;
 }
+/* ===== FIX CONTAINER OVERLAP ===== */
+
+/* Header fixed height */
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 70px;
+    z-index: 1000;
+}
+
+/* Main content padding to account for fixed header */
+.main {
+    padding-top: 70px; /* Same as header height */
+}
+
+/* Article detail section spacing */
+.articles-section {
+    padding: 2rem 0; /* Reduced from 100px to 2rem */
+}
+
+/* Back button container */
+.article-detail {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* Ensure back button is visible */
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: var(--bg-secondary);
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--text-primary);
+    font-weight: 600;
+    transition: all 0.3s ease;
+    margin-bottom: 2rem; /* Add space below button */
+}
+
+.back-btn:hover {
+    background: var(--bg-primary);
+    border-color: var(--primary-color);
+    transform: translateX(-5px);
+}
