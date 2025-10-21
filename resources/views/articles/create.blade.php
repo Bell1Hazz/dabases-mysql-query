@@ -209,6 +209,22 @@
             </form>
         </div>
     </div>
+    {{-- Validation Summary (if there are errors) --}}
+@if ($errors->any())
+    <div class="validation-summary">
+        <h4>❌ Terdapat {{ $errors->count() }} kesalahan pada form:</h4>
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>• {{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
+<form action="{{ route('articles.store') }}" method="POST" enctype="multipart/form-data" class="article-form" id="articleForm">
+    @csrf
+    {{-- form fields... --}}
+</form>
 </section>
 @endsection
 
