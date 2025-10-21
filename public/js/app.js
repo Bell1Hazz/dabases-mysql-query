@@ -243,37 +243,34 @@ const SmoothScroll = {
 };
 
 // ===== LAZY LOADING IMAGES =====
+// Lazy Loading Images
 const LazyImages = {
     init() {
-        if ('IntersectionObserver' in window) {
-            this.setupIntersectionObserver();
-        } else {
-            this.loadAllImages();
-        }
-    },
-
-    setupIntersectionObserver() {
-        const imageElements = document.querySelectorAll('img[loading="lazy"]');
+        const images = document.querySelectorAll('img[loading="lazy"]');
         
-        const imageObserver = new IntersectionObserver((entries, observer) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const img = entry.target;
-                    observer.unobserve(img);
-                }
+        if ('IntersectionObserver' in window) {
+            const imageObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        img.src = img.dataset.src || img.src;
+                        imageObserver.unobserve(img);
+                    }
+                });
+            }, {
+                rootMargin: '50px' // Load 50px before visible
             });
-        });
 
-        imageElements.forEach(img => imageObserver.observe(img));
-    },
-
-    loadAllImages() {
-        const imageElements = document.querySelectorAll('img[loading="lazy"]');
-        imageElements.forEach(img => {
-            img.loading = 'eager';
-        });
+            images.forEach(img => imageObserver.observe(img));
+        }
     }
 };
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+    LazyImages.init();
+    // ... other inits
+});
 
 // ===== PERFORMANCE MONITORING =====
 const PerformanceMonitor = {
