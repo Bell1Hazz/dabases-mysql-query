@@ -60,6 +60,27 @@ class ArticleController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+            $messages = [
+        'title.required' => 'Judul artikel wajib diisi.',
+        'title.max' => 'Judul artikel maksimal 255 karakter.',
+        'user_id.required' => 'Penulis harus dipilih.',
+        'user_id.exists' => 'Penulis yang dipilih tidak valid.',
+        'category_id.required' => 'Kategori wajib dipilih.',
+        'category_id.exists' => 'Kategori yang dipilih tidak valid.',
+        'date.required' => 'Tanggal publikasi wajib diisi.',
+        'date.date' => 'Format tanggal tidak valid.',
+        'summary.required' => 'Ringkasan artikel wajib diisi.',
+        'summary.max' => 'Ringkasan maksimal 500 karakter.',
+        'content.required' => 'Konten artikel wajib diisi.',
+        'image.required' => 'Gambar artikel wajib diupload.',
+        'image.image' => 'File yang diupload harus berupa gambar.',
+        'image.mimes' => 'Gambar harus berformat JPG, PNG, JPEG, atau WEBP.',
+        'image.max' => 'Ukuran gambar maksimal 2MB.',
+        'read_time.required' => 'Estimasi waktu baca wajib diisi.',
+        'tags.array' => 'Format tags tidak valid.',
+        'tags.*.exists' => 'Tag yang dipilih tidak valid.',
+    ];
+
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'user_id' => 'required|exists:users,id',
@@ -164,6 +185,21 @@ class ArticleController extends Controller
      */
     public function update(Request $request, Article $article): RedirectResponse
     {
+        $messages = [
+        'title.required' => 'Judul artikel wajib diisi.',
+        'title.max' => 'Judul artikel maksimal 255 karakter.',
+        'user_id.required' => 'Penulis harus dipilih.',
+        'category_id.required' => 'Kategori wajib dipilih.',
+        'date.required' => 'Tanggal publikasi wajib diisi.',
+        'summary.required' => 'Ringkasan artikel wajib diisi.',
+        'summary.max' => 'Ringkasan maksimal 500 karakter.',
+        'content.required' => 'Konten artikel wajib diisi.',
+        'image.image' => 'File yang diupload harus berupa gambar.',
+        'image.mimes' => 'Gambar harus berformat JPG, PNG, JPEG, atau WEBP.',
+        'image.max' => 'Ukuran gambar maksimal 2MB.',
+        'read_time.required' => 'Estimasi waktu baca wajib diisi.',
+    ];
+
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'user_id' => 'required|exists:users,id',
