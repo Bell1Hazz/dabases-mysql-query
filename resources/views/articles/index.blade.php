@@ -151,7 +151,7 @@
                 </div>
             </div>
             <div class="about-image">
-                <img src="{{ asset('images/logo-web-AH.png') }}" alt="About ArticleHub showing modern office workspace with people reading articles on digital devices">
+                <img src="{{ asset('images/logo-articlehub.png') }}" alt="About ArticleHub showing modern office workspace with people reading articles on digital devices">
             </div>
         </div>
     </div>
