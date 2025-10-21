@@ -226,6 +226,12 @@
     {{-- form fields... --}}
 </form>
 </section>
+@push('scripts')
+<script src="{{ asset('js/form-validation.js') }}"></script>
+<script>
+    lucide.createIcons();
+</script>
+@endpush
 @endsection
 
 @push('scripts')
