@@ -155,7 +155,7 @@
             </div>
         </div>
     </div>
-    <img 
+    {{-- <img 
     src="{{ asset('storage/' . $article->image) }}" 
     alt="{{ $article->title }}"
     width="400"
@@ -164,6 +164,6 @@
     decoding="async"
     class="lazy-image"
     data-src="{{ asset('storage/' . $article->image) }}"
->
+> --}}
 </section>
 @endsection

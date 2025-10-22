@@ -1,7 +1,8 @@
 <?php
 
-use App\Http\Controllers\ArticleController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthorController;
+use App\Http\Controllers\ArticleController;
 
 Route::get('/', function () {
     return redirect()->route('articles.index');
