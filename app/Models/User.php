@@ -28,7 +28,8 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    // RELATIONSHIPS
+    // ===== RELATIONSHIPS =====
+    
     public function articles()
     {
         return $this->hasMany(Article::class);
@@ -39,11 +40,59 @@ class User extends Authenticatable
         return $this->hasMany(Comment::class);
     }
 
-    // HELPER METHODS
+    // ===== SCOPES =====
+    
+    /**
+     * Eager load articles count
+     */
+    public function scopeWithArticlesCount($query)
+    {
+        return $query->withCount('articles');
+    }
+
+    /**
+     * Get users ordered by most articles
+     */
+    public function scopePopular($query, $limit = 10)
+    {
+        return $query->withCount('articles')
+                     ->orderBy('articles_count', 'desc')
+                     ->limit($limit);
+    }
+
+    /**
+     * Get active users (yang punya minimal 1 artikel)
+     */
+    public function scopeActive($query)
+    {
+        return $query->has('articles');
+    }
+
+    // ===== HELPER METHODS =====
+    
+    /**
+     * Get avatar URL
+     */
     public function getAvatarUrlAttribute()
     {
         return $this->avatar 
-            ? asset($this->avatar) 
-            : 'https://ui-avatars.com/api/?name=' . urlencode($this->name);
+            ? asset('storage/' . $this->avatar)
+            : 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&background=2563eb&color=fff';
+    }
+
+    /**
+     * Get total articles count
+     */
+    public function getArticlesCountAttribute()
+    {
+        return $this->articles()->count();
+    }
+
+    /**
+     * Get total views across all articles
+     */
+    public function getTotalViewsAttribute()
+    {
+        return $this->articles()->sum('views');
     }
 }
