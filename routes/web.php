@@ -9,3 +9,8 @@ Route::get('/', function () {
 
 // Resource Route for Article
 Route::resource('articles', ArticleController::class);
+
+Route::prefix('authors')->group(function () {
+    Route::get('/', [AuthorController::class, 'index'])->name('authors.index');
+    Route::get('/{user}', [AuthorController::class, 'show'])->name('authors.show');
+});
