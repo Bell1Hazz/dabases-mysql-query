@@ -30,6 +30,7 @@ class Category extends Model
     }
 
     // RELATIONSHIPS
+    // cek ini juga mas
     public function articles()
     {
         return $this->hasMany(Article::class);

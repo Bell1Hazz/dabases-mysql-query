@@ -29,7 +29,7 @@ class User extends Authenticatable
     ];
 
     // ===== RELATIONSHIPS =====
-    
+    // jangan sungkan koreksi mas
     public function articles()
     {
         return $this->hasMany(Article::class);

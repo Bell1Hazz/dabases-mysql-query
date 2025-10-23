@@ -28,6 +28,7 @@ class Tag extends Model
     }
 
     // RELATIONSHIPS
+    // yang ini aman belum mas
     public function articles()
     {
         return $this->belongsToMany(Article::class);

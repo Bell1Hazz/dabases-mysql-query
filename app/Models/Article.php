@@ -29,6 +29,7 @@ class Article extends Model
     protected $with = ['user', 'category']; // Eager load by default
 
     // RELATIONSHIPS
+    // cek bagian sini nih mas, kira kira dah sesuai belum
     public function user()
     {
         return $this->belongsTo(User::class);
