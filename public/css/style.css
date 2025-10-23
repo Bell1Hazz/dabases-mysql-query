@@ -1899,6 +1899,25 @@ body {
     font-weight: 600;
     transition: color 0.3s ease;
 }
+/* ===== TAG CHECKBOX STYLING ===== */
+.form-group label[style*="cursor: pointer"]:has(input[type="checkbox"]) {
+    transition: all 0.3s ease;
+}
+
+.form-group label[style*="cursor: pointer"]:has(input[type="checkbox"]):hover {
+    background: var(--hover-bg) !important;
+    border-color: var(--primary-color) !important;
+}
+
+.form-group label[style*="cursor: pointer"]:has(input[type="checkbox"]:checked) {
+    background: rgba(37, 99, 235, 0.1) !important;
+    border-color: var(--primary-color) !important;
+}
+
+.form-group label[style*="cursor: pointer"]:has(input[type="checkbox"]:checked) span {
+    color: var(--primary-color) !important;
+    font-weight: 600 !important;
+}
 /* =====================================================
    END OF STYLESHEET
    ===================================================== */
