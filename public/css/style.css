@@ -1870,7 +1870,35 @@ body {
     scroll-behavior: auto !important;
   }
 }
+/* ===== COMMENT SECTION ===== */
+.comments-wrapper {
+    margin-top: 4rem;
+}
 
+.comment-form-wrapper {
+    background: var(--bg-secondary);
+    padding: 2rem;
+    border-radius: 12px;
+    margin-bottom: 3rem;
+}
+
+.comment-item {
+    background: var(--bg-secondary);
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    transition: var(--transition);
+}
+
+.comment-item:hover {
+    box-shadow: var(--shadow-md);
+}
+
+/* Character counter colors */
+#charCount {
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
 /* =====================================================
    END OF STYLESHEET
    ===================================================== */
