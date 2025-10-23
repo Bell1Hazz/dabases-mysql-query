@@ -9,15 +9,11 @@ Route::get('/', function () {
     return redirect()->route('articles.index');
 });
 
-// Resource Route for Article
+// Article Resource
 Route::resource('articles', ArticleController::class);
 
-Route::prefix('authors')->group(function () {
-    Route::get('/', [AuthorController::class, 'index'])->name('authors.index');
-    Route::get('/{user}', [AuthorController::class, 'show'])->name('authors.show');
-});
-// Comment Routes
-Route::prefix('articles/{article}/comments')->group(function () {
-    Route::post('/', [CommentController::class, 'store'])->name('comments.store');
-    Route::delete('/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
-});
+// Nested Comment Resource
+Route::resource('articles.comments', CommentController::class)->only(['store', 'destroy']);
+
+// Author Resource
+Route::resource('authors', AuthorController::class)->only(['index', 'show']);

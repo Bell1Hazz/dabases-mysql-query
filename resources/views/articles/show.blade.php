@@ -114,10 +114,10 @@
                         Leave a Comment
                     </h4>
 
-                    <form action="{{ route('comments.store', $article) }}" method="POST" id="commentForm">
+                    <form action="{{ route('articles.comments.store', $article) }}" method="POST" id="commentForm">
                         @csrf
                         
-                        <!-- Select User (Temporary - nanti pakai auth) -->
+                        <!-- User Selection -->
                         <div style="margin-bottom: 1.5rem;">
                             <label for="user_id" style="display: block; font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem;">
                                 Post as *
@@ -130,7 +130,9 @@
                             >
                                 <option value="">Select user...</option>
                                 @foreach(\App\Models\User::all() as $user)
-                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                    <option value="{{ $user->id }}" {{ old('user_id') == $user->id ? 'selected' : '' }}>
+                                        {{ $user->name }}
+                                    </option>
                                 @endforeach
                             </select>
                             @error('user_id')
@@ -195,8 +197,8 @@
                                                 </span>
                                             </div>
 
-                                            <!-- Delete Button -->
-                                            <form action="{{ route('comments.destroy', $comment) }}" method="POST" onsubmit="return confirm('Delete this comment?')">
+                                            <!-- Delete Comment Button (FIXED!) -->
+                                            <form action="{{ route('articles.comments.destroy', [$article, $comment]) }}" method="POST" onsubmit="return confirm('Delete this comment?')">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button 
@@ -228,10 +230,11 @@
 
                                 <!-- Reply Form (Hidden by default) -->
                                 <div id="replyForm{{ $comment->id }}" style="display: none; margin-left: 4rem; margin-top: 1rem; padding: 1.5rem; background: var(--bg-primary); border-radius: 8px; border-left: 3px solid var(--primary-color);">
-                                    <form action="{{ route('comments.store', $article) }}" method="POST">
+                                    <form action="{{ route('articles.comments.store', $article) }}" method="POST">
                                         @csrf
                                         <input type="hidden" name="parent_id" value="{{ $comment->id }}">
                                         
+                                        <!-- User select -->
                                         <div style="margin-bottom: 1rem;">
                                             <label for="reply_user_id_{{ $comment->id }}" style="display: block; font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem; font-size: 0.875rem;">
                                                 Reply as
@@ -299,8 +302,8 @@
                                                                 </span>
                                                             </div>
 
-                                                            <!-- Delete Reply -->
-                                                            <form action="{{ route('comments.destroy', $reply) }}" method="POST" onsubmit="return confirm('Delete this reply?')">
+                                                            <!-- Delete Reply (FIXED!) -->
+                                                            <form action="{{ route('articles.comments.destroy', [$article, $reply]) }}" method="POST" onsubmit="return confirm('Delete this reply?')">
                                                                 @csrf
                                                                 @method('DELETE')
                                                                 <button 
@@ -366,6 +369,7 @@
         if (form.style.display === 'none' || !form.style.display) {
             form.style.display = 'block';
             form.querySelector('textarea').focus();
+            lucide.createIcons(); // Re-render icons in form
         } else {
             form.style.display = 'none';
         }

@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Article;
 use App\Models\Comment;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
@@ -13,7 +12,9 @@ use Illuminate\Support\Facades\Log;
 class CommentController extends Controller
 {
     /**
-     * Store a new comment
+     * Store a new comment (nested resource)
+     * 
+     * Route: POST /articles/{article}/comments
      */
     public function store(Request $request, Article $article): RedirectResponse
     {
@@ -27,6 +28,7 @@ class CommentController extends Controller
             'content.required' => 'Comment cannot be empty.',
             'content.min' => 'Comment must be at least 3 characters.',
             'content.max' => 'Comment cannot exceed 1000 characters.',
+            'parent_id.exists' => 'Parent comment not found.',
         ]);
 
         try {
@@ -69,14 +71,20 @@ class CommentController extends Controller
     }
 
     /**
-     * Delete a comment
+     * Delete a comment (nested resource)
+     * 
+     * Route: DELETE /articles/{article}/comments/{comment}
      */
-    public function destroy(Comment $comment): RedirectResponse
+    public function destroy(Article $article, Comment $comment): RedirectResponse
     {
+        // Verify comment belongs to article
+        if ($comment->article_id !== $article->id) {
+            return redirect()->back()
+                ->with('error', 'Comment does not belong to this article.');
+        }
+
         try {
             DB::transaction(function () use ($comment) {
-                
-                $articleId = $comment->article_id;
                 
                 // Delete replies first (cascade)
                 $comment->replies()->delete();
@@ -86,7 +94,7 @@ class CommentController extends Controller
 
                 Log::info('Comment deleted', [
                     'comment_id' => $comment->id,
-                    'article_id' => $articleId,
+                    'article_id' => $comment->article_id,
                 ]);
             });
 
@@ -96,6 +104,7 @@ class CommentController extends Controller
         } catch (\Exception $e) {
             Log::error('Failed to delete comment', [
                 'error' => $e->getMessage(),
+                'comment_id' => $comment->id,
             ]);
 
             return redirect()->back()

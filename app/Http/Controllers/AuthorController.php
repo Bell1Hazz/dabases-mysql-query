@@ -8,12 +8,12 @@ use Illuminate\View\View;
 class AuthorController extends Controller
 {
     /**
-     * Display all authors with article count
+     * Display all authors (index)
      */
     public function index(): View
     {
         $authors = User::withCount('articles')
-                      ->has('articles') // Only users with articles
+                      ->has('articles')
                       ->orderBy('articles_count', 'desc')
                       ->get();
 
@@ -21,7 +21,7 @@ class AuthorController extends Controller
     }
 
     /**
-     * Display specific author profile
+     * Display specific author (show)
      */
     public function show(User $user): View
     {
@@ -32,9 +32,9 @@ class AuthorController extends Controller
         $stats = [
             'total_articles' => $user->articles->count(),
             'total_views' => $user->articles->sum('views'),
-            'avg_read_time' => $user->articles->avg(function ($article) {
-                return (int) filter_var($article->read_time, FILTER_SANITIZE_NUMBER_INT);
-            }),
+            'avg_views' => $user->articles->count() > 0 
+                ? round($user->articles->sum('views') / $user->articles->count())
+                : 0,
             'categories_count' => $user->articles->pluck('category_id')->unique()->count(),
         ];
 
