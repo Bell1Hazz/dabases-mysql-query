@@ -152,29 +152,30 @@
                         @enderror
                     </div>
 
-                    <!-- Tags -->
+                    <!-- Tags (Checkbox Style) -->
                     <div class="form-group full-width">
-                        <label for="tags" class="form-label">Tags (Optional)</label>
-                        <select 
-                            id="tags" 
-                            name="tags[]" 
-                            class="form-select @error('tags') error @enderror"
-                            multiple
-                            style="height: 120px;"
-                        >
+                        <label class="form-label">Tags (Optional)</label>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0.75rem; padding: 1rem; background: var(--bg-secondary); border: 2px solid var(--border-color); border-radius: 8px;">
                             @foreach($tags as $tag)
-                                <option value="{{ $tag->id }}" 
-                                    {{ in_array($tag->id, old('tags', $article->tags->pluck('id')->toArray())) ? 'selected' : '' }}>
-                                    {{ $tag->name }}
-                                </option>
+                                <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.75rem; background: var(--bg-primary); border-radius: 6px; cursor: pointer; transition: all 0.3s ease; border: 2px solid transparent;">
+                                    <input 
+                                        type="checkbox" 
+                                        name="tags[]" 
+                                        value="{{ $tag->id }}"
+                                        {{ in_array($tag->id, old('tags', $article->tags->pluck('id')->toArray())) ? 'checked' : '' }}
+                                        style="width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary-color);"
+                                    >
+                                    <span style="font-size: 0.875rem; font-weight: 500; color: var(--text-primary);">
+                                        {{ $tag->name }}
+                                    </span>
+                                </label>
                             @endforeach
-                        </select>
-                        <small class="form-hint">Hold Ctrl (Windows) or Cmd (Mac) to select multiple</small>
+                        </div>
+                        <small class="form-hint">Select multiple tags by clicking the checkboxes</small>
                         @error('tags')
                             <span class="form-error">{{ $message }}</span>
                         @enderror
                     </div>
-
                     <!-- Summary -->
                     <div class="form-group full-width">
                         <label for="summary" class="form-label">Summary *</label>
