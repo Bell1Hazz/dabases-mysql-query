@@ -51,11 +51,14 @@
     </div>
 </div>
 
-<!-- Recent & Top Articles -->
+<!-- Dashboard Grid -->
 <div class="dashboard-grid">
     <!-- Recent Articles -->
     <div class="dashboard-card">
-        <h3>Recent Articles</h3>
+        <div class="card-header">
+            <h3>Recent Articles</h3>
+            <a href="{{ route('admin.articles.index') }}" class="btn-link">View All</a>
+        </div>
         <div class="article-list">
             @foreach($recentArticles as $article)
                 <div class="article-item">
@@ -77,7 +80,10 @@
 
     <!-- Top Authors -->
     <div class="dashboard-card">
-        <h3>Top Authors</h3>
+        <div class="card-header">
+            <h3>Top Authors</h3>
+            <a href="{{ route('admin.users.index') }}" class="btn-link">View All</a>
+        </div>
         <div class="author-list">
             @foreach($topAuthors as $author)
                 <div class="author-item">

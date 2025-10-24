@@ -33,11 +33,12 @@ class AdminUserController extends Controller
         ]);
 
         $validated['password'] = Hash::make($validated['password']);
+        $validated['email_verified_at'] = now();
 
         User::create($validated);
 
         return redirect()->route('admin.users.index')
-            ->with('success', 'User created successfully! 👤');
+            ->with('success', 'User created successfully!');
     }
 
     public function edit(User $user): View
@@ -64,7 +65,7 @@ class AdminUserController extends Controller
         $user->update($validated);
 
         return redirect()->route('admin.users.index')
-            ->with('success', 'User updated successfully! ✅');
+            ->with('success', 'User updated successfully!');
     }
 
     public function destroy(User $user): RedirectResponse
@@ -77,6 +78,6 @@ class AdminUserController extends Controller
         $user->delete();
 
         return redirect()->route('admin.users.index')
-            ->with('success', 'User deleted successfully! 🗑️');
+            ->with('success', 'User deleted successfully!');
     }
 }

@@ -11,7 +11,7 @@
 </head>
 <body>
     <!-- Admin Sidebar -->
-    <aside class="admin-sidebar">
+    <aside class="admin-sidebar" id="adminSidebar">
         <div class="sidebar-header">
             <img src="{{ asset('images/logo-articlehub.png') }}" alt="Logo" class="sidebar-logo">
             <h2>Admin Panel</h2>
@@ -94,7 +94,9 @@
     <script src="{{ asset('js/app.js') }}"></script>
     <script src="{{ asset('js/admin.js') }}"></script>
     <script>
-        lucide.createIcons();
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
+        });
     </script>
     @stack('scripts')
 </body>

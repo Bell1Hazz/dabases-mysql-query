@@ -93,13 +93,18 @@
                 </div>
             </div>
 
-            <!-- Edit Button -->
-            <div style="margin-top: 2rem; display: flex; gap: 1rem;">
-                <a href="{{ route('articles.edit', $article) }}" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.875rem 2rem; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.3s ease;">
-                    <i data-lucide="edit"></i>
-                    <span>Edit Article</span>
-                </a>
-            </div>
+            <!-- Edit Button (Admin Only) -->
+            @auth
+                @if(auth()->user()->role === 'admin')
+                    <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+                        <a href="{{ route('admin.articles.edit', $article) }}" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.875rem 2rem; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.3s ease;">
+                            <i data-lucide="edit"></i>
+                            <span>Edit Article</span>
+                        </a>
+                    </div>
+                @endif
+            @endauth
+
 
             <!-- Comments Section -->
             <div class="comments-wrapper" style="margin-top: 4rem;">

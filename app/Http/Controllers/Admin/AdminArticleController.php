@@ -42,7 +42,7 @@ class AdminArticleController extends Controller
     {
         $categories = Category::all();
         $tags = Tag::all();
-        $users = User::where('role', 'author')->orWhere('role', 'admin')->get();
+        $users = User::whereIn('role', ['author', 'admin'])->get();
         
         return view('admin.articles.create', compact('categories', 'tags', 'users'));
     }
@@ -91,30 +91,18 @@ class AdminArticleController extends Controller
             });
 
             return redirect()->route('admin.articles.index')
-                ->with('success', 'Article created successfully! 🎉');
+                ->with('success', 'Article created successfully!');
 
         } catch (\Exception $e) {
-            if (isset($imagePath) && Storage::disk('public')->exists($imagePath)) {
-                Storage::disk('public')->delete($imagePath);
-            }
-
-            return redirect()->back()
-                ->withInput()
-                ->with('error', 'Failed to create article.');
+            return redirect()->back()->withInput()->with('error', 'Failed to create article.');
         }
-    }
-
-    public function show(Article $article): View
-    {
-        $article->load(['user', 'category', 'tags', 'comments.user']);
-        return view('admin.articles.show', compact('article'));
     }
 
     public function edit(Article $article): View
     {
         $categories = Category::all();
         $tags = Tag::all();
-        $users = User::where('role', 'author')->orWhere('role', 'admin')->get();
+        $users = User::whereIn('role', ['author', 'admin'])->get();
         $article->load('tags');
         
         return view('admin.articles.edit', compact('article', 'categories', 'tags', 'users'));
@@ -164,12 +152,10 @@ class AdminArticleController extends Controller
             });
 
             return redirect()->route('admin.articles.index')
-                ->with('success', 'Article updated successfully! ✅');
+                ->with('success', 'Article updated successfully!');
 
         } catch (\Exception $e) {
-            return redirect()->back()
-                ->withInput()
-                ->with('error', 'Failed to update article.');
+            return redirect()->back()->withInput()->with('error', 'Failed to update article.');
         }
     }
 
@@ -177,7 +163,6 @@ class AdminArticleController extends Controller
     {
         try {
             DB::transaction(function () use ($article) {
-                
                 $imagePath = $article->image;
                 
                 $article->tags()->detach();
@@ -190,11 +175,10 @@ class AdminArticleController extends Controller
             });
 
             return redirect()->route('admin.articles.index')
-                ->with('success', 'Article deleted successfully! 🗑️');
+                ->with('success', 'Article deleted successfully!');
 
         } catch (\Exception $e) {
-            return redirect()->back()
-                ->with('error', 'Failed to delete article.');
+            return redirect()->back()->with('error', 'Failed to delete article.');
         }
     }
 }
