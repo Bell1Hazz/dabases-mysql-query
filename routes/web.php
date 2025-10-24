@@ -10,44 +10,44 @@ use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\AdminCategoryController;
 use App\Http\Controllers\Admin\AdminTagController;
 
+
+
 // Home
 Route::get('/', function () {
     return redirect()->route('articles.index');
 });
 
-// ===== PUBLIC ROUTES (No Auth) =====
+// ===== PUBLIC ROUTES =====
 
-// Articles (Read Only)
 Route::get('/articles', [ArticleController::class, 'index'])->name('articles.index');
 Route::get('/articles/{article}', [ArticleController::class, 'show'])->name('articles.show');
 
-// Comment Routes
 Route::post('articles/{article}/comments', [CommentController::class, 'store'])
     ->name('articles.comments.store');
 Route::delete('articles/{article}/comments/{comment}', [CommentController::class, 'destroy'])
     ->name('articles.comments.destroy');
 
-// Authors
 Route::resource('authors', AuthorController::class)->only(['index', 'show']);
 
 // ===== AUTH ROUTES =====
 
-// Dashboard (redirect based on role)
-Route::get('/dashboard', function () {
-    if (auth()->check() && auth()->user()->role === 'admin') {
-        return redirect()->route('admin.dashboard');
-    }
-    return redirect()->route('articles.index');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/dashboard', function () {
+        if (auth()->user()->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        }
+        return redirect()->route('articles.index');
+    })->name('dashboard');
+});
 
-// ===== ADMIN ROUTES (Admin Only) =====
+// ===== ADMIN ROUTES =====
 
-Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
+Route::prefix('admin')->middleware(['auth', \App\Http\Middleware\IsAdmin::class])->group(function () {
     
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
     
-    // Article Management
+    // Articles
     Route::resource('articles', AdminArticleController::class)->names([
         'index' => 'admin.articles.index',
         'create' => 'admin.articles.create',
@@ -58,7 +58,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
         'destroy' => 'admin.articles.destroy',
     ]);
     
-    // User Management
+    // Users
     Route::resource('users', AdminUserController::class)->names([
         'index' => 'admin.users.index',
         'create' => 'admin.users.create',
@@ -69,7 +69,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
         'destroy' => 'admin.users.destroy',
     ]);
     
-    // Category Management
+    // Categories
     Route::resource('categories', AdminCategoryController::class)->except(['show'])->names([
         'index' => 'admin.categories.index',
         'create' => 'admin.categories.create',
@@ -79,7 +79,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
         'destroy' => 'admin.categories.destroy',
     ]);
     
-    // Tag Management
+    // Tags
     Route::resource('tags', AdminTagController::class)->except(['show'])->names([
         'index' => 'admin.tags.index',
         'create' => 'admin.tags.create',
@@ -90,5 +90,4 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
     ]);
 });
 
-// Breeze Auth Routes
 require __DIR__.'/auth.php';

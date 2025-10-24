@@ -94,6 +94,7 @@
             </div>
 
             <!-- Edit Button (Admin Only) -->
+
             @auth
                 @if(auth()->user()->role === 'admin')
                     <div style="margin-top: 2rem; display: flex; gap: 1rem;">

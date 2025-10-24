@@ -2,9 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
@@ -86,4 +89,17 @@ class User extends Authenticatable
     {
         return $this->articles()->sum('views');
     }
+    public function up(): void
+    {
+        Schema::table('users', function (Blueprint $table) {
+            $table->text('bio')->nullable()->after('avatar');
+        });
+    }
+    public function down(): void
+    {
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('bio');
+        });
+    }
+
 }

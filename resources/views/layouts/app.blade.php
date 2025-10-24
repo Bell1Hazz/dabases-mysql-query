@@ -25,67 +25,77 @@
                 </a>
             </div>
             
-            <nav class="nav-menu" id="navMenu">
-                <ul class="nav-list">
-                    <li class="nav-item">
-                        <a href="{{ route('articles.index') }}" class="nav-link {{ request()->routeIs('articles.index') ? 'active' : '' }}">
-                            <i data-lucide="home" class="nav-icon"></i>
-                            <span>Home</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{ route('articles.index') }}#articles" class="nav-link">
-                            <i data-lucide="newspaper" class="nav-icon"></i>
-                            <span>Articles</span>
-                        </a>
-                    </li>
-                    @auth
-                        @if(auth()->user()->role === 'admin')
-                            <li class="nav-item">
-                                <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.*') ? 'active' : '' }}">
-                                    <i data-lucide="layout-dashboard" class="nav-icon"></i>
-                                    <span>Admin Panel</span>
-                                </a>
-                            </li>
-                        @endif
-                    @endauth
-                    <li class="nav-item">
-                        <a href="{{ route('articles.index') }}#about" class="nav-link">
-                            <i data-lucide="info" class="nav-icon"></i>
-                            <span>About Us</span>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-
-            <div class="nav-actions">
-                @auth
-                    <div style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--bg-secondary); border-radius: 20px;">
-                        <span style="font-size: 0.875rem; font-weight: 600; color: var(--text-primary);">{{ auth()->user()->name }}</span>
-                        <form action="{{ route('logout') }}" method="POST" style="display: inline;">
-                            @csrf
-                            <button type="submit" style="background: none; border: none; color: var(--text-secondary); cursor: pointer; padding: 0.25rem;" title="Logout">
-                                <i data-lucide="log-out" style="width: 18px; height: 18px;"></i>
-                            </button>
-                        </form>
-                    </div>
-                @else
-                    <a href="{{ route('login') }}" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--primary-color); color: white; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 0.875rem;">
-                        <i data-lucide="log-in" style="width: 18px; height: 18px;"></i>
-                        Login
+<nav class="nav-menu" id="navMenu">
+    <ul class="nav-list">
+        <li class="nav-item">
+            <a href="{{ route('articles.index') }}" class="nav-link {{ request()->routeIs('articles.index') ? 'active' : '' }}">
+                <i data-lucide="home" class="nav-icon"></i>
+                <span>Home</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ route('articles.index') }}#articles" class="nav-link">
+                <i data-lucide="newspaper" class="nav-icon"></i>
+                <span>Articles</span>
+            </a>
+        </li>
+        
+        {{-- Admin Panel Link - CRITICAL FIX! --}}
+        @auth
+            @php
+                $isAdmin = auth()->user()->role === 'admin';
+            @endphp
+            
+            @if($isAdmin)
+                <li class="nav-item">
+                    <a href="{{ route('admin.dashboard') }}" class="nav-link {{ request()->routeIs('admin.*') ? 'active' : '' }}">
+                        <i data-lucide="layout-dashboard" class="nav-icon"></i>
+                        <span>Admin Panel</span>
                     </a>
-                @endauth
-                
-                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-                    <i data-lucide="moon" id="themeIcon"></i>
-                </button>
-                <button class="search-toggle" id="searchToggle" aria-label="Toggle search">
-                    <i data-lucide="search"></i>
-                </button>
-                <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
-                    <i data-lucide="menu" id="navToggleIcon"></i>
-                </button>
+                </li>
+            @endif
+        @endauth
+        
+        <li class="nav-item">
+            <a href="{{ route('articles.index') }}#about" class="nav-link">
+                <i data-lucide="info" class="nav-icon"></i>
+                <span>About Us</span>
+            </a>
+        </li>
+    </ul>
+</nav>
+
+<div class="nav-actions">
+    @auth
+        <div style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; background: var(--bg-secondary); border-radius: 20px;">
+            <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 0.875rem;">
+                {{ substr(auth()->user()->name, 0, 1) }}
             </div>
+            <span style="font-size: 0.875rem; font-weight: 600; color: var(--text-primary);">{{ auth()->user()->name }}</span>
+            <form action="{{ route('logout') }}" method="POST" style="display: inline; margin: 0;">
+                @csrf
+                <button type="submit" style="background: none; border: none; color: var(--text-secondary); cursor: pointer; padding: 0.25rem; display: flex; align-items: center;" title="Logout">
+                    <i data-lucide="log-out" style="width: 18px; height: 18px;"></i>
+                </button>
+            </form>
+        </div>
+    @else
+        <a href="{{ route('login') }}" style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1.5rem; background: var(--primary-color); color: white; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 0.875rem;">
+            <i data-lucide="log-in" style="width: 18px; height: 18px;"></i>
+            Login
+        </a>
+    @endauth
+    
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+        <i data-lucide="moon" id="themeIcon"></i>
+    </button>
+    <button class="search-toggle" id="searchToggle" aria-label="Toggle search">
+        <i data-lucide="search"></i>
+    </button>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+        <i data-lucide="menu" id="navToggleIcon"></i>
+    </button>
+</div>
         </div>
 
         <div class="search-bar" id="searchBar">

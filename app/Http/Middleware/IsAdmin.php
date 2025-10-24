@@ -15,9 +15,9 @@ class IsAdmin
                 ->with('error', 'Please login to access admin panel.');
         }
 
-        if (!auth()->user()->isAdmin()) {
+        if (auth()->user()->role !== 'admin') {
             return redirect()->route('articles.index')
-                ->with('error', 'You do not have permission to access this area.');
+                ->with('error', 'Access denied. Admin only.');
         }
 
         return $next($request);
