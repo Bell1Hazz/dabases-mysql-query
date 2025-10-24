@@ -14,6 +14,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
         'avatar',
         'bio',
     ];
@@ -29,7 +30,7 @@ class User extends Authenticatable
     ];
 
     // ===== RELATIONSHIPS =====
-    // jangan sungkan koreksi mas
+    
     public function articles()
     {
         return $this->hasMany(Article::class);
@@ -42,37 +43,33 @@ class User extends Authenticatable
 
     // ===== SCOPES =====
     
-    /**
-     * Eager load articles count
-     */
+    public function scopeAdmins($query)
+    {
+        return $query->where('role', 'admin');
+    }
+
+    public function scopeAuthors($query)
+    {
+        return $query->where('role', 'author');
+    }
+
     public function scopeWithArticlesCount($query)
     {
         return $query->withCount('articles');
     }
 
-    /**
-     * Get users ordered by most articles
-     */
-    public function scopePopular($query, $limit = 10)
-    {
-        return $query->withCount('articles')
-                     ->orderBy('articles_count', 'desc')
-                     ->limit($limit);
-    }
-
-    /**
-     * Get active users (yang punya minimal 1 artikel)
-     */
-    public function scopeActive($query)
-    {
-        return $query->has('articles');
-    }
-
     // ===== HELPER METHODS =====
     
-    /**
-     * Get avatar URL
-     */
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isAuthor()
+    {
+        return $this->role === 'author';
+    }
+
     public function getAvatarUrlAttribute()
     {
         return $this->avatar 
@@ -80,17 +77,11 @@ class User extends Authenticatable
             : 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&background=2563eb&color=fff';
     }
 
-    /**
-     * Get total articles count
-     */
     public function getArticlesCountAttribute()
     {
         return $this->articles()->count();
     }
 
-    /**
-     * Get total views across all articles
-     */
     public function getTotalViewsAttribute()
     {
         return $this->articles()->sum('views');
