@@ -1,6 +1,6 @@
 @extends('admin.layouts.admin')
 
-@section('title', 'Add New Author - Admin')
+@section('title', 'Add New Author')
 
 @section('content')
 <div class="page-header">
@@ -56,7 +56,10 @@
 
         <div class="form-actions">
             <a href="{{ route('admin.users.index') }}" class="btn-secondary">Cancel</a>
-            <button type="submit" class="btn-primary">Create Author</button>
+            <button type="submit" class="btn-primary">
+                <i data-lucide="user-plus"></i>
+                Create Author
+            </button>
         </div>
     </form>
 </div>

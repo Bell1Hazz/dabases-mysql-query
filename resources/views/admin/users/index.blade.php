@@ -1,6 +1,6 @@
 @extends('admin.layouts.admin')
 
-@section('title', 'Manage Authors - Admin')
+@section('title', 'Manage Authors')
 
 @section('content')
 <div class="page-header">
@@ -11,7 +11,6 @@
     </a>
 </div>
 
-<!-- Users Table -->
 <div class="table-card">
     <table class="admin-table">
         <thead>
@@ -29,9 +28,7 @@
             @foreach($users as $user)
                 <tr>
                     <td>
-                        <div class="table-avatar">
-                            {{ substr($user->name, 0, 1) }}
-                        </div>
+                        <div class="table-avatar">{{ substr($user->name, 0, 1) }}</div>
                     </td>
                     <td><strong>{{ $user->name }}</strong></td>
                     <td>{{ $user->email }}</td>
