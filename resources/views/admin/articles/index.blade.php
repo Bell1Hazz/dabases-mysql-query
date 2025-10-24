@@ -1,6 +1,6 @@
 @extends('admin.layouts.admin')
 
-@section('title', 'Manage Articles - Admin')
+@section('title', 'Manage Articles')
 
 @section('content')
 <div class="page-header">
@@ -50,9 +50,7 @@
                     <td>
                         <img src="{{ asset('storage/' . $article->image) }}" alt="{{ $article->title }}" class="table-thumb">
                     </td>
-                    <td>
-                        <strong>{{ Str::limit($article->title, 40) }}</strong>
-                    </td>
+                    <td><strong>{{ Str::limit($article->title, 40) }}</strong></td>
                     <td>{{ $article->user->name }}</td>
                     <td>
                         <span class="badge" style="background: {{ $article->category->color }};">
@@ -90,7 +88,6 @@
     </table>
 </div>
 
-<!-- Pagination -->
 <div class="pagination-wrapper">
     {{ $articles->links() }}
 </div>
