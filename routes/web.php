@@ -10,84 +10,62 @@ use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\AdminCategoryController;
 use App\Http\Controllers\Admin\AdminTagController;
 
+// ============================================================
+// PUBLIC ROUTES
+// ============================================================
 
-
-// Home
 Route::get('/', function () {
     return redirect()->route('articles.index');
 });
 
-// ===== PUBLIC ROUTES =====
-
+// Articles (public)
 Route::get('/articles', [ArticleController::class, 'index'])->name('articles.index');
 Route::get('/articles/{article}', [ArticleController::class, 'show'])->name('articles.show');
 
+// Comments (public)
 Route::post('articles/{article}/comments', [CommentController::class, 'store'])
     ->name('articles.comments.store');
 Route::delete('articles/{article}/comments/{comment}', [CommentController::class, 'destroy'])
     ->name('articles.comments.destroy');
 
+// Authors (public)
 Route::resource('authors', AuthorController::class)->only(['index', 'show']);
 
-// ===== AUTH ROUTES =====
+// ============================================================
+// AUTH ROUTES
+// ============================================================
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', function () {
-        if (auth()->user()->role === 'admin') {
-            return redirect()->route('admin.dashboard');
-        }
-        return redirect()->route('articles.index');
+        return auth()->user()->role === 'admin'
+            ? redirect()->route('admin.dashboard')
+            : redirect()->route('articles.index');
     })->name('dashboard');
 });
 
-// ===== ADMIN ROUTES =====
+// ============================================================
+// ADMIN ROUTES
+// ============================================================
 
-Route::prefix('admin')->middleware(['auth', \App\Http\Middleware\IsAdmin::class])->group(function () {
-    
+Route::prefix('admin')
+    ->name('admin.')
+    ->middleware(['auth', \App\Http\Middleware\IsAdmin::class])
+    ->group(function () {
+
     // Dashboard
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
-    
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
     // Articles
-    Route::resource('articles', AdminArticleController::class)->names([
-        'index' => 'admin.articles.index',
-        'create' => 'admin.articles.create',
-        'store' => 'admin.articles.store',
-        'show' => 'admin.articles.show',
-        'edit' => 'admin.articles.edit',
-        'update' => 'admin.articles.update',
-        'destroy' => 'admin.articles.destroy',
-    ]);
-    
+    Route::resource('articles', AdminArticleController::class);
+
     // Users
-    Route::resource('users', AdminUserController::class)->names([
-        'index' => 'admin.users.index',
-        'create' => 'admin.users.create',
-        'store' => 'admin.users.store',
-        'show' => 'admin.users.show',
-        'edit' => 'admin.users.edit',
-        'update' => 'admin.users.update',
-        'destroy' => 'admin.users.destroy',
-    ]);
-    
+    Route::resource('users', AdminUserController::class);
+
     // Categories
-    Route::resource('categories', AdminCategoryController::class)->except(['show'])->names([
-        'index' => 'admin.categories.index',
-        'create' => 'admin.categories.create',
-        'store' => 'admin.categories.store',
-        'edit' => 'admin.categories.edit',
-        'update' => 'admin.categories.update',
-        'destroy' => 'admin.categories.destroy',
-    ]);
-    
+    Route::resource('categories', AdminCategoryController::class)->except(['show']);
+
     // Tags
-    Route::resource('tags', AdminTagController::class)->except(['show'])->names([
-        'index' => 'admin.tags.index',
-        'create' => 'admin.tags.create',
-        'store' => 'admin.tags.store',
-        'edit' => 'admin.tags.edit',
-        'update' => 'admin.tags.update',
-        'destroy' => 'admin.tags.destroy',
-    ]);
+    Route::resource('tags', AdminTagController::class)->except(['show']);
 });
 
 require __DIR__.'/auth.php';
