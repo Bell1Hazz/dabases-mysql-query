@@ -14,7 +14,7 @@
     <aside class="admin-sidebar" id="adminSidebar">
         <div class="sidebar-header">
             <img src="{{ asset('images/logo-articlehub.png') }}" alt="Logo" class="sidebar-logo">
-            <h2>Admin Panel</h2>
+            <h2 >Admin Panel</h2>
         </div>
 
         <nav class="sidebar-nav">
