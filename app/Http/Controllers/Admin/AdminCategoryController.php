@@ -35,24 +35,25 @@ class AdminCategoryController extends Controller
             ->with('success', 'Category created successfully!');
     }
 
-    public function edit(Category $category): View
-    {
-        return view('admin.categories.edit', compact('category'));
-    }
+    public function edit(Category $category)
+{
+    return view('admin.categories.edit', compact('category'));
+}
 
-    public function update(Request $request, Category $category): RedirectResponse
-    {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:categories,name,' . $category->id,
-            'description' => 'nullable|string|max:500',
-            'color' => 'required|string|max:7',
-        ]);
+public function update(Request $request, Category $category)
+{
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'slug' => 'required|string|max:255|unique:categories,slug,' . $category->id,
+        'description' => 'nullable|string',
+        'color' => 'nullable|string|max:7',
+    ]);
 
-        $category->update($validated);
+    $category->update($validated);
 
-        return redirect()->route('admin.categories.index')
-            ->with('success', 'Category updated successfully!');
-    }
+    return redirect()->route('admin.categories.index')->with('success', 'Kategori berhasil diperbarui!');
+}
+
 
     public function destroy(Category $category): RedirectResponse
     {

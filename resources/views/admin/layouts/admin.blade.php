@@ -6,7 +6,7 @@
     <title>@yield('title', 'Admin Panel - ArticleHub')</title>
     
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    {{-- <link rel="stylesheet" href="{{ asset('css/style.css') }}"> --}}
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
 </head>
 <body>
