@@ -92,9 +92,7 @@
     <button class="search-toggle" id="searchToggle" aria-label="Toggle search">
         <i data-lucide="search"></i>
     </button>
-    <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
-        <i data-lucide="menu" id="navToggleIcon"></i>
-    </button>
+
 </div>
         </div>
 
@@ -186,13 +184,14 @@
                 <div class="footer-section">
                     <h3>Categories</h3>
                     <ul class="footer-links">
-                        @foreach(\App\Models\Category::limit(5)->get() as $category)
+                        @foreach($footerCategories as $category)
                             <li>
                                 <a href="{{ route('articles.index', ['category' => $category->slug]) }}">
                                     {{ $category->name }}
                                 </a>
                             </li>
                         @endforeach
+
                     </ul>
                 </div>
                 

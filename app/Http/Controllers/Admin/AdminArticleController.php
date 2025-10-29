@@ -17,26 +17,49 @@ use Illuminate\Support\Str;
 class AdminArticleController extends Controller
 {
     public function index(Request $request): View
-    {
-        $query = Article::with(['user', 'category', 'tags']);
+{
+    $cacheKey = 'articles_'.md5($request->fullUrl());
 
-        if ($request->has('category') && $request->category) {
-            $query->where('category_id', $request->category);
+    $articles = cache()->remember($cacheKey, 60, function() use ($request) {
+        $query = Article::select([
+                'id', 'title', 'summary', 'image', 'date', 
+                'read_time', 'views', 'user_id', 'category_id'
+            ])
+            ->with([
+                'user:id,name',
+                'category:id,name,slug,color',
+                'tags:id,name'
+            ])
+            ->withCount('comments'); // ✅ optimasi comment count
+
+        if ($request->filled('category')) {
+            $query->whereHas('category', fn($q) => 
+                $q->where('slug', $request->category)
+            );
         }
 
-        if ($request->has('search') && $request->search) {
+        if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(fn($q) => 
                 $q->where('title', 'like', "%{$search}%")
-                  ->orWhere('summary', 'like', "%{$search}%");
-            });
+                  ->orWhere('summary', 'like', "%{$search}%")
+                  ->orWhere('content', 'like', "%{$search}%")
+            );
         }
 
-        $articles = $query->latest()->paginate(10);
-        $categories = Category::all();
+        return $query->latest('date')->paginate(6)->withQueryString();
+    });
 
-        return view('admin.articles.index', compact('articles', 'categories'));
-    }
+    // ✅ cache categories juga
+    $categories = cache()->remember('categories_with_count', 600, function() {
+        return Category::select(['id','name','slug'])
+            ->withCount('articles')
+            ->get();
+    });
+
+    return view('articles.index', compact('articles', 'categories'));
+}
+
 
     public function create(): View
     {
