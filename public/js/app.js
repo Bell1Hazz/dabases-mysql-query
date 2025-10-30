@@ -2,8 +2,8 @@
  * ===== PERFORMANCE OPTIMIZED APP.JS =====
  */
 
-// ===== UTILITY FUNCTIONS =====
-function debounce(func, delay) {
+// ===== UTILITY FUNCTIONS ===== 
+function debounce(func, delay) { 
     let timeoutId;
     return function (...args) {
         clearTimeout(timeoutId);
