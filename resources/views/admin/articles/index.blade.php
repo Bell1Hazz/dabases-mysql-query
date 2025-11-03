@@ -53,8 +53,8 @@
                     <td><strong>{{ Str::limit($article->title, 40) }}</strong></td>
                     <td>{{ $article->user->name }}</td>
                     <td>
-                        <span class="badge" style="background: {{ $article->category->color }};">
-                            {{ $article->category->name }}
+                        <span class="article-category" style="background: {{ $article->category->color }}; color: white;">
+                            {{ ucfirst($article->category->name) }}
                         </span>
                     </td>
                     <td>{{ number_format($article->views) }}</td>

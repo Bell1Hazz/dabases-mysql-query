@@ -528,7 +528,7 @@ body {
 
 .article-category {
   background: var(--primary-color);
-  color: white;
+  color: white !important;
   padding: 0.25rem 0.75rem;
   border-radius: var(--border-radius-sm);
   font-weight: 500;

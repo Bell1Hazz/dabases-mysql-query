@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Admin Panel - ArticleHub')</title>
     
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script defer src="https://unpkg.com/lucide@latest" ></script>
     {{-- <link rel="stylesheet" href="{{ asset('css/style.css') }}"> --}}
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
 </head>
@@ -91,9 +91,9 @@
         </div>
     </main>
 
-    <script src="{{ asset('js/app.js') }}"></script>
-    <script src="{{ asset('js/admin.js') }}"></script>
-    <script>
+    <script defer src="{{ asset('js/app.js') }}"></script>
+    <script defer="{{ asset('js/admin.js') }}"></script>
+    <script defer>
         document.addEventListener('DOMContentLoaded', function() {
             lucide.createIcons();
         });
