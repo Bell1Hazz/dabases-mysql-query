@@ -17,55 +17,35 @@ use Illuminate\Support\Str;
 class AdminArticleController extends Controller
 {
     public function index(Request $request): View
-{
-    $cacheKey = 'articles_'.md5($request->fullUrl());
-
-    $articles = cache()->remember($cacheKey, 60, function() use ($request) {
+    {
         $query = Article::select([
-                'id', 'title', 'summary', 'image', 'date', 
-                'read_time', 'views', 'user_id', 'category_id'
+                'id', 'title', 'summary', 'image', 'date', 'views', 'user_id', 'category_id'
             ])
-            ->with([
-                'user:id,name',
-                'category:id,name,slug,color',
-                'tags:id,name'
-            ])
-            ->withCount('comments'); // ✅ optimasi comment count
+            ->with(['user:id,name', 'category:id,name,color']);
 
-        if ($request->filled('category')) {
-            $query->whereHas('category', fn($q) => 
-                $q->where('slug', $request->category)
-            );
+        if ($request->has('category') && $request->category) {
+            $query->where('category_id', $request->category);
         }
 
-        if ($request->filled('search')) {
+        if ($request->has('search') && $request->search) {
             $search = $request->search;
-            $query->where(fn($q) => 
+            $query->where(function($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
-                  ->orWhere('summary', 'like', "%{$search}%")
-                  ->orWhere('content', 'like', "%{$search}%")
-            );
+                  ->orWhere('summary', 'like', "%{$search}%");
+            });
         }
 
-        return $query->latest('date')->paginate(6)->withQueryString();
-    });
+        $articles = $query->latest('date')->paginate(10);
+        $categories = Category::select(['id', 'name'])->get();
 
-    // ✅ cache categories juga
-    $categories = cache()->remember('categories_with_count', 600, function() {
-        return Category::select(['id','name','slug'])
-            ->withCount('articles')
-            ->get();
-    });
-
-    return view('articles.index', compact('articles', 'categories'));
-}
-
+        return view('admin.articles.index', compact('articles', 'categories'));
+    }
 
     public function create(): View
     {
-        $categories = Category::all();
-        $tags = Tag::all();
-        $users = User::whereIn('role', ['author', 'admin'])->get();
+        $categories = Category::select(['id', 'name'])->get();
+        $tags = Tag::select(['id', 'name'])->get();
+        $users = User::select(['id', 'name'])->whereIn('role', ['author', 'admin'])->get();
         
         return view('admin.articles.create', compact('categories', 'tags', 'users'));
     }
@@ -117,16 +97,26 @@ class AdminArticleController extends Controller
                 ->with('success', 'Article created successfully!');
 
         } catch (\Exception $e) {
+            if (isset($imagePath) && Storage::disk('public')->exists($imagePath)) {
+                Storage::disk('public')->delete($imagePath);
+            }
+
             return redirect()->back()->withInput()->with('error', 'Failed to create article.');
         }
     }
 
+    public function show(Article $article): View
+    {
+        $article->load(['user', 'category', 'tags', 'comments.user']);
+        return view('admin.articles.show', compact('article'));
+    }
+
     public function edit(Article $article): View
     {
-        $categories = Category::all();
-        $tags = Tag::all();
-        $users = User::whereIn('role', ['author', 'admin'])->get();
-        $article->load('tags');
+        $categories = Category::select(['id', 'name'])->get();
+        $tags = Tag::select(['id', 'name'])->get();
+        $users = User::select(['id', 'name'])->whereIn('role', ['author', 'admin'])->get();
+        $article->load('tags:id,name');
         
         return view('admin.articles.edit', compact('article', 'categories', 'tags', 'users'));
     }
@@ -204,5 +194,4 @@ class AdminArticleController extends Controller
             return redirect()->back()->with('error', 'Failed to delete article.');
         }
     }
-    
 }

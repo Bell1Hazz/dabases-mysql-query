@@ -48,24 +48,53 @@ Route::middleware(['auth', 'verified'])->group(function () {
 // ============================================================
 
 Route::prefix('admin')
-    ->name('admin.')
     ->middleware(['auth', \App\Http\Middleware\IsAdmin::class])
     ->group(function () {
 
     // Dashboard
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
-    // Articles
-    Route::resource('articles', AdminArticleController::class);
+    // Articles - REMOVE ->name('admin.') prefix, define manually
+    Route::resource('articles', AdminArticleController::class)->names([
+        'index' => 'admin.articles.index',
+        'create' => 'admin.articles.create',
+        'store' => 'admin.articles.store',
+        'show' => 'admin.articles.show',
+        'edit' => 'admin.articles.edit',
+        'update' => 'admin.articles.update',
+        'destroy' => 'admin.articles.destroy',
+    ]);
 
     // Users
-    Route::resource('users', AdminUserController::class);
+    Route::resource('users', AdminUserController::class)->names([
+        'index' => 'admin.users.index',
+        'create' => 'admin.users.create',
+        'store' => 'admin.users.store',
+        'show' => 'admin.users.show',
+        'edit' => 'admin.users.edit',
+        'update' => 'admin.users.update',
+        'destroy' => 'admin.users.destroy',
+    ]);
 
     // Categories
-    Route::resource('categories', AdminCategoryController::class)->except(['show']);
+    Route::resource('categories', AdminCategoryController::class)->except(['show'])->names([
+        'index' => 'admin.categories.index',
+        'create' => 'admin.categories.create',
+        'store' => 'admin.categories.store',
+        'edit' => 'admin.categories.edit',
+        'update' => 'admin.categories.update',
+        'destroy' => 'admin.categories.destroy',
+    ]);
 
     // Tags
-    Route::resource('tags', AdminTagController::class)->except(['show']);
+    Route::resource('tags', AdminTagController::class)->except(['show'])->names([
+        'index' => 'admin.tags.index',
+        'create' => 'admin.tags.create',
+        'store' => 'admin.tags.store',
+        'edit' => 'admin.tags.edit',
+        'update' => 'admin.tags.update',
+        'destroy' => 'admin.tags.destroy',
+    ]);
 });
 
 require __DIR__.'/auth.php';
