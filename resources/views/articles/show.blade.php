@@ -346,7 +346,7 @@
 @endsection
 
 @push('scripts')
-<script>
+<script defer>
     // Initialize Lucide icons
     lucide.createIcons();
 
