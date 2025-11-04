@@ -1,5 +1,4 @@
-/* ===== AUTH PAGES STYLES ===== */
-
+/* ===== AUTH HEADER ===== */
 .auth-header {
     position: fixed;
     top: 0;
@@ -14,11 +13,101 @@
 }
 
 .auth-header .container {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
+    width: 100%;
+    padding: 0 2rem;
 }
 
+/* Back Link (Left) */
+.back-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.back-link:hover {
+    color: var(--primary-color);
+    background: var(--bg-secondary);
+    transform: translateX(-3px);
+}
+
+.back-link svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* Logo (Center) */
+.logo-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    color: inherit;
+}
+
+.logo-img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+}
+
+.logo-text {
+    font-size: 1.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--primary-color), #8b5cf6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Theme Toggle (Right) */
+.theme-toggle {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-secondary);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: var(--text-primary);
+}
+
+.theme-toggle:hover {
+    background: var(--primary-color);
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 640px) {
+    .auth-header .container {
+        padding: 0 1rem;
+        grid-template-columns: auto 1fr auto;
+        gap: 1rem;
+    }
+
+    .back-link span {
+        display: none; /* Hide "Back to Home" text on mobile */
+    }
+
+    .logo-text {
+        font-size: 1.25rem;
+    }
+}
+
+/* ===== REST OF AUTH STYLES ===== */
 .auth-main {
     min-height: 100vh;
     display: flex;
@@ -246,6 +335,30 @@
     font-size: 0.875rem;
 }
 
+.alert {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+}
+
+.alert svg {
+    width: 20px;
+    height: 20px;
+}
+
+.alert-success {
+    background: #10b981;
+    color: white;
+}
+
+.alert-error {
+    background: #ef4444;
+    color: white;
+}
+
 /* Responsive */
 @media (max-width: 640px) {
     .auth-card {
@@ -258,5 +371,9 @@
 
     .demo-info {
         font-size: 0.8rem;
+    }
+
+    .auth-header .container {
+        grid-template-columns: auto 1fr auto;
     }
 }

@@ -11,23 +11,30 @@
 </head>
 <body>
     {{-- Header (Minimal for Auth Pages) --}}
-    <header class="auth-header">
-        <div class="container">
+<header class="auth-header">
+    <div class="container" style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 0 2rem;">
+        {{-- LEFT: Back Button --}}
+        <div style="justify-self: start;">
+            <a href="{{ route('articles.index') }}" class="back-link">
+                <i data-lucide="arrow-left"></i>
+                <span>Back to Home</span>
+            </a>
+        </div>
+        
+        {{-- CENTER: Logo --}}
+        <div style="justify-self: center;">
             <a href="{{ route('articles.index') }}" class="logo-link">
                 <img src="{{ asset('images/logo-articlehub.png') }}" alt="ArticleHub" class="logo-img">
                 <span class="logo-text">ArticleHub</span>
             </a>
-            
-            <div style="display: flex; align-items: center; gap: 1rem;">
-                <a href="{{ route('articles.index') }}" style="color: var(--text-secondary); text-decoration: none; font-weight: 500; font-size: 0.875rem; display: flex; align-items: center; gap: 0.5rem;">
-                    <i data-lucide="arrow-left" style="width: 16px; height: 16px;"></i>
-                    Back to Home
-                </a>
-                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme"></button>
-            </div>
         </div>
-    </header>
-
+        
+        {{-- RIGHT: Theme Toggle --}}
+        <div style="justify-self: end;">
+            <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme"></button>
+        </div>
+    </div>
+</header>
     {{-- Main Content --}}
     <main class="auth-main">
         <div class="auth-container">
