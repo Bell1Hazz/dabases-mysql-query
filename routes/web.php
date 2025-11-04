@@ -10,51 +10,78 @@ use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\AdminCategoryController;
 use App\Http\Controllers\Admin\AdminTagController;
 
-// ============================================================
-// PUBLIC ROUTES
-// ============================================================
-
 Route::get('/', function () {
     return redirect()->route('articles.index');
 });
 
-// Articles (public)
+// ===== PUBLIC ROUTES =====
+
 Route::get('/articles', [ArticleController::class, 'index'])->name('articles.index');
 Route::get('/articles/{article}', [ArticleController::class, 'show'])->name('articles.show');
 
-// Comments (public)
 Route::post('articles/{article}/comments', [CommentController::class, 'store'])
     ->name('articles.comments.store');
 Route::delete('articles/{article}/comments/{comment}', [CommentController::class, 'destroy'])
     ->name('articles.comments.destroy');
 
-// Authors (public)
 Route::resource('authors', AuthorController::class)->only(['index', 'show']);
 
-// ============================================================
-// AUTH ROUTES
-// ============================================================
+// ===== AUTH ROUTES =====
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', function () {
-        return auth()->user()->role === 'admin'
-            ? redirect()->route('admin.dashboard')
-            : redirect()->route('articles.index');
+        $user = auth()->user();
+        
+        if ($user->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        } elseif ($user->role === 'author') {
+            return redirect()->route('author.articles.index');
+        } else {
+            return redirect()->route('articles.index');
+        }
     })->name('dashboard');
 });
 
-// ============================================================
-// ADMIN ROUTES
-// ============================================================
+// ===== AUTHOR ROUTES (Author Role) =====
+
+Route::prefix('author')
+    ->middleware(['auth', \App\Http\Middleware\IsAuthor::class])
+    ->group(function () {
+    
+    // Author Dashboard
+    Route::get('/dashboard', function() {
+        $user = auth()->user();
+        $articles = $user->articles()->with(['category', 'tags'])->latest()->paginate(10);
+        
+        $stats = [
+            'total_articles' => $user->articles()->count(),
+            'total_views' => $user->articles()->sum('views'),
+            'total_comments' => \App\Models\Comment::whereIn('article_id', $user->articles->pluck('id'))->count(),
+        ];
+        
+        return view('author.dashboard', compact('articles', 'stats'));
+    })->name('author.dashboard');
+    
+    // Author Articles (Only own articles)
+    Route::get('/articles', function() {
+        $articles = auth()->user()->articles()->with(['category', 'tags'])->latest()->paginate(10);
+        return view('author.articles.index', compact('articles'));
+    })->name('author.articles.index');
+    
+    Route::get('/articles/create', [ArticleController::class, 'create'])->name('author.articles.create');
+    Route::post('/articles', [ArticleController::class, 'store'])->name('author.articles.store');
+    Route::get('/articles/{article}/edit', [ArticleController::class, 'edit'])->name('author.articles.edit');
+    Route::put('/articles/{article}', [ArticleController::class, 'update'])->name('author.articles.update');
+});
+
+// ===== ADMIN ROUTES =====
 
 Route::prefix('admin')
     ->middleware(['auth', \App\Http\Middleware\IsAdmin::class])
     ->group(function () {
-
-    // Dashboard
+    
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
-
-    // Articles - REMOVE ->name('admin.') prefix, define manually
+    
     Route::resource('articles', AdminArticleController::class)->names([
         'index' => 'admin.articles.index',
         'create' => 'admin.articles.create',
@@ -64,8 +91,7 @@ Route::prefix('admin')
         'update' => 'admin.articles.update',
         'destroy' => 'admin.articles.destroy',
     ]);
-
-    // Users
+    
     Route::resource('users', AdminUserController::class)->names([
         'index' => 'admin.users.index',
         'create' => 'admin.users.create',
@@ -75,8 +101,7 @@ Route::prefix('admin')
         'update' => 'admin.users.update',
         'destroy' => 'admin.users.destroy',
     ]);
-
-    // Categories
+    
     Route::resource('categories', AdminCategoryController::class)->except(['show'])->names([
         'index' => 'admin.categories.index',
         'create' => 'admin.categories.create',
@@ -85,8 +110,7 @@ Route::prefix('admin')
         'update' => 'admin.categories.update',
         'destroy' => 'admin.categories.destroy',
     ]);
-
-    // Tags
+    
     Route::resource('tags', AdminTagController::class)->except(['show'])->names([
         'index' => 'admin.tags.index',
         'create' => 'admin.tags.create',

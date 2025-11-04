@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Add New Article - ArticleHub')
+@section('title', 'Create New Article - ArticleHub')
 
 @section('content')
 <section class="form-section">
@@ -11,12 +11,38 @@
                 <p>Share your knowledge with the world</p>
             </div>
 
-            {{-- IMPORTANT: Add enctype for file upload --}}
+            {{-- Validation Summary --}}
+            @if ($errors->any())
+                <div class="validation-summary">
+                    <h4>❌ Terdapat {{ $errors->count() }} kesalahan pada form:</h4>
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>• {{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <form action="{{ route('articles.store') }}" method="POST" enctype="multipart/form-data" class="article-form" id="articleForm">
                 @csrf
                 
                 <div class="form-grid">
-                    <!-- Title -->
+                    {{-- Show Current Author (Read-only) --}}
+                    <div class="form-group full-width">
+                        <label class="form-label">Author</label>
+                        <div style="display: flex; align-items: center; gap: 0.75rem; padding: 1rem; background: var(--bg-secondary); border: 2px solid var(--border-color); border-radius: 8px;">
+                            <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700;">
+                                {{ substr(auth()->user()->name, 0, 1) }}
+                            </div>
+                            <div>
+                                <strong style="color: var(--text-primary); display: block;">{{ auth()->user()->name }}</strong>
+                                <span style="font-size: 0.875rem; color: var(--text-secondary);">{{ auth()->user()->email }}</span>
+                            </div>
+                        </div>
+                        <small class="form-hint">Article will be published under your name</small>
+                    </div>
+
+                    {{-- Title --}}
                     <div class="form-group full-width">
                         <label for="title" class="form-label">Article Title *</label>
                         <input 
@@ -33,44 +59,7 @@
                         @enderror
                     </div>
 
-                    <!-- Author (User) -->
-                    <div class="form-group">
-                        <label for="user_id" class="form-label">Author *</label>
-                        <select 
-                            id="user_id" 
-                            name="user_id" 
-                            class="form-select @error('user_id') error @enderror"
-                            required
-                        >
-                            <option value="">Select author</option>
-                            @foreach(\App\Models\User::all() as $user)
-                                <option value="{{ $user->id }}" {{ old('user_id') == $user->id ? 'selected' : '' }}>
-                                    {{ $user->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('user_id')
-                            <span class="form-error">{{ $message }}</span>
-                        @enderror
-                    </div>
-
-                    <!-- Date -->
-                    <div class="form-group">
-                        <label for="date" class="form-label">Publication Date *</label>
-                        <input 
-                            type="date" 
-                            id="date" 
-                            name="date" 
-                            class="form-input @error('date') error @enderror" 
-                            value="{{ old('date', date('Y-m-d')) }}"
-                            required
-                        >
-                        @error('date')
-                            <span class="form-error">{{ $message }}</span>
-                        @enderror
-                    </div>
-
-                    <!-- Category -->
+                    {{-- Category --}}
                     <div class="form-group">
                         <label for="category_id" class="form-label">Category *</label>
                         <select 
@@ -91,8 +80,24 @@
                         @enderror
                     </div>
 
-                    <!-- Read Time -->
+                    {{-- Date --}}
                     <div class="form-group">
+                        <label for="date" class="form-label">Publication Date *</label>
+                        <input 
+                            type="date" 
+                            id="date" 
+                            name="date" 
+                            class="form-input @error('date') error @enderror" 
+                            value="{{ old('date', date('Y-m-d')) }}"
+                            required
+                        >
+                        @error('date')
+                            <span class="form-error">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    {{-- Read Time --}}
+                    <div class="form-group full-width">
                         <label for="read_time" class="form-label">Read Time *</label>
                         <input 
                             type="text" 
@@ -108,7 +113,7 @@
                         @enderror
                     </div>
 
-                    <!-- 🖼️ IMAGE UPLOAD (NEW!) -->
+                    {{-- Image Upload --}}
                     <div class="form-group full-width">
                         <label for="image" class="form-label">Article Image *</label>
                         <div class="image-upload-wrapper">
@@ -127,7 +132,7 @@
                                 <span class="file-upload-btn">Browse</span>
                             </label>
                             
-                            <!-- Image Preview -->
+                            {{-- Image Preview --}}
                             <div id="imagePreview" class="image-preview" style="display: none;">
                                 <img id="previewImg" src="" alt="Preview">
                                 <button type="button" onclick="removeImage()" class="remove-preview-btn">✕ Remove</button>
@@ -142,22 +147,19 @@
                         @enderror
                     </div>
 
-                    <!-- Tags (Checkbox Style - EASIER!) -->
+                    {{-- Tags (Checkbox) --}}
                     <div class="form-group full-width">
                         <label class="form-label">Tags (Optional)</label>
-                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0.75rem; padding: 1rem; background: var(--bg-secondary); border: 2px solid var(--border-color); border-radius: 8px;">
+                        <div class="tag-checkboxes">
                             @foreach($tags as $tag)
-                                <label style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.75rem; background: var(--bg-primary); border-radius: 6px; cursor: pointer; transition: all 0.3s ease; border: 2px solid transparent;">
+                                <label class="tag-checkbox">
                                     <input 
                                         type="checkbox" 
                                         name="tags[]" 
                                         value="{{ $tag->id }}"
                                         {{ in_array($tag->id, old('tags', [])) ? 'checked' : '' }}
-                                        style="width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary-color);"
                                     >
-                                    <span style="font-size: 0.875rem; font-weight: 500; color: var(--text-primary);">
-                                        {{ $tag->name }}
-                                    </span>
+                                    <span>{{ $tag->name }}</span>
                                 </label>
                             @endforeach
                         </div>
@@ -166,7 +168,8 @@
                             <span class="form-error">{{ $message }}</span>
                         @enderror
                     </div>
-                    <!-- Summary -->
+
+                    {{-- Summary --}}
                     <div class="form-group full-width">
                         <label for="summary" class="form-label">Summary *</label>
                         <textarea 
@@ -182,7 +185,7 @@
                         @enderror
                     </div>
 
-                    <!-- Content -->
+                    {{-- Content --}}
                     <div class="form-group full-width">
                         <label for="content" class="form-label">Article Content *</label>
                         <textarea 
@@ -199,42 +202,77 @@
                     </div>
                 </div>
 
-                <!-- Form Actions -->
+                {{-- Form Actions --}}
                 <div class="form-actions">
-                    <a href="{{ route('articles.index') }}" class="btn-secondary">
-                        <span>←</span> Cancel
+                    <a href="{{ auth()->user()->role === 'admin' ? route('admin.articles.index') : route('author.dashboard') }}" class="btn-secondary">
+                        <i data-lucide="arrow-left"></i>
+                        <span>Cancel</span>
                     </a>
                     <button type="submit" class="btn-primary">
-                        <span>📝</span> Publish Article
+                        <i data-lucide="send"></i>
+                        <span>Publish Article</span>
                     </button>
                 </div>
             </form>
         </div>
     </div>
-    {{-- Validation Summary (if there are errors) --}}
-@if ($errors->any())
-    <div class="validation-summary">
-        <h4>❌ Terdapat {{ $errors->count() }} kesalahan pada form:</h4>
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>• {{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
-
-<form action="{{ route('articles.store') }}" method="POST" enctype="multipart/form-data" class="article-form" id="articleForm">
-    @csrf
-    {{-- form fields... --}}
-</form>
 </section>
-@push('scripts')
-<script src="{{ asset('js/form-validation.js') }}"></script>
-<script>
-    lucide.createIcons();
-</script>
-@endpush
 @endsection
+
+@push('styles')
+<style>
+/* Tag Checkbox Styling */
+.tag-checkboxes {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 0.75rem;
+    padding: 1rem;
+    background: var(--bg-secondary);
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+}
+
+.tag-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: var(--bg-primary);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.tag-checkbox:hover {
+    background: var(--hover-bg);
+    border-color: var(--primary-color);
+}
+
+.tag-checkbox input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: var(--primary-color);
+}
+
+.tag-checkbox:has(input:checked) {
+    background: rgba(37, 99, 235, 0.1);
+    border-color: var(--primary-color);
+}
+
+.tag-checkbox span {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.tag-checkbox:has(input:checked) span {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+</style>
+@endpush
 
 @push('scripts')
 <script>
@@ -246,6 +284,13 @@ function previewImage(event) {
     const fileNameDisplay = document.getElementById('fileNameDisplay');
     
     if (file) {
+        // Check file size (2MB)
+        if (file.size > 2 * 1024 * 1024) {
+            alert('File size must be less than 2MB');
+            event.target.value = '';
+            return;
+        }
+
         const reader = new FileReader();
         
         reader.onload = function(e) {
@@ -268,5 +313,12 @@ function removeImage() {
     preview.style.display = 'none';
     fileNameDisplay.textContent = 'Choose an image...';
 }
+
+// Initialize Lucide Icons
+document.addEventListener('DOMContentLoaded', function() {
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+});
 </script>
 @endpush

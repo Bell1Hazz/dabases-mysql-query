@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // Register middleware alias
         $middleware->alias([
             'admin' => IsAdmin::class,
+            'author' => \App\Http\Middleware\IsAuthor::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

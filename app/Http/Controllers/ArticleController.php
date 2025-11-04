@@ -5,12 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\Article;
 use App\Models\Category;
 use App\Models\Tag;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
 class ArticleController extends Controller
@@ -20,45 +22,54 @@ class ArticleController extends Controller
      */
     public function index(Request $request): View
     {
-        // ✅ OPTIMIZED: Select only needed columns
-        $query = Article::select([
-                'id', 
-                'title', 
-                'summary', 
-                'image', 
-                'date', 
-                'read_time', 
-                'views',
-                'user_id',
-                'category_id'
-            ])
-            ->with([
-                'user:id,name',  // ✅ Select specific columns
-                'category:id,name,slug,color',
-                'tags:id,name'
-            ]);
+        // ✅ Cache key untuk query
+        $cacheKey = 'articles_' . md5(
+            $request->get('category', '') . 
+            $request->get('search', '') . 
+            $request->get('page', 1)
+        );
 
-        if ($request->has('category') && $request->category) {
-            $query->whereHas('category', function ($q) use ($request) {
-                $q->where('slug', $request->category);
-            });
-        }
+        // ✅ Cache 5 menit
+        $articles = Cache::remember($cacheKey, 300, function () use ($request) {
+            $query = Article::select([
+                    'id', 
+                    'title', 
+                    'summary', 
+                    'image', 
+                    'date', 
+                    'read_time', 
+                    'views',
+                    'user_id',
+                    'category_id'
+                ])
+                ->with([
+                    'user:id,name',
+                    'category:id,name,slug,color',
+                    'tags:id,name'
+                ]);
 
-        if ($request->has('search') && $request->search) {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('title', 'like', "%{$search}%")
-                  ->orWhere('summary', 'like', "%{$search}%")
-                  ->orWhere('content', 'like', "%{$search}%");
-            });
-        }
+            if ($request->has('category') && $request->category) {
+                $query->whereHas('category', function ($q) use ($request) {
+                    $q->where('slug', $request->category);
+                });
+            }
 
-        $articles = $query->latest('date')->paginate(6)->withQueryString();
+            if ($request->has('search') && $request->search) {
+                $search = $request->search;
+                $query->where(function($q) use ($search) {
+                    $q->where('title', 'like', "%{$search}%")
+                      ->orWhere('summary', 'like', "%{$search}%");
+                });
+            }
+
+            return $query->latest('date')->paginate(6)->withQueryString();
+        });
         
-        // ✅ Select specific columns untuk categories
-        $categories = Category::select(['id', 'name', 'slug'])
-                             ->withCount('articles')
-                             ->get();
+        $categories = Cache::remember('categories_with_count', 3600, function () {
+            return Category::select(['id', 'name', 'slug'])
+                          ->withCount('articles')
+                          ->get();
+        });
 
         return view('articles.index', compact('articles', 'categories'));
     }
@@ -68,7 +79,17 @@ class ArticleController extends Controller
      */
     public function create(): View
     {
-        // ✅ Select only needed columns
+        // ✅ Check authorization
+        if (!auth()->check()) {
+            return redirect()->route('login')
+                ->with('error', 'Please login to create article.');
+        }
+
+        if (!in_array(auth()->user()->role, ['admin', 'author'])) {
+            return redirect()->route('articles.index')
+                ->with('error', 'Only authors can create articles.');
+        }
+
         $categories = Category::select(['id', 'name'])->get();
         $tags = Tag::select(['id', 'name'])->get();
         
@@ -83,8 +104,6 @@ class ArticleController extends Controller
         $messages = [
             'title.required' => 'Judul artikel wajib diisi.',
             'title.max' => 'Judul artikel maksimal 255 karakter.',
-            'user_id.required' => 'Penulis harus dipilih.',
-            'user_id.exists' => 'Penulis yang dipilih tidak valid.',
             'category_id.required' => 'Kategori wajib dipilih.',
             'category_id.exists' => 'Kategori yang dipilih tidak valid.',
             'date.required' => 'Tanggal publikasi wajib diisi.',
@@ -103,7 +122,6 @@ class ArticleController extends Controller
 
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'user_id' => 'required|exists:users,id',
             'category_id' => 'required|exists:categories,id',
             'date' => 'required|date',
             'summary' => 'required|string|max:500',
@@ -121,16 +139,11 @@ class ArticleController extends Controller
                 if ($request->hasFile('image')) {
                     $extension = $request->file('image')->getClientOriginalExtension();
                     $filename = time() . '_' . Str::random(10) . '.' . $extension;
-                    
-                    $imagePath = $request->file('image')->storeAs(
-                        'articles',
-                        $filename,
-                        'public'
-                    );
+                    $imagePath = $request->file('image')->storeAs('articles', $filename, 'public');
                 }
 
                 $article = Article::create([
-                    'user_id' => $validated['user_id'],
+                    'user_id' => auth()->id(), // ✅ Auto-use logged in user
                     'category_id' => $validated['category_id'],
                     'title' => $validated['title'],
                     'date' => $validated['date'],
@@ -144,29 +157,28 @@ class ArticleController extends Controller
                     $article->tags()->attach($validated['tags']);
                 }
 
-                Log::info('Article created with image', [
-                    'article_id' => $article->id,
-                    'image_path' => $imagePath,
-                ]);
-
                 return $article;
             });
 
-            return redirect()->route('articles.show', $article)
-                ->with('success', 'Article created successfully! 🎉');
+            // Clear cache
+            Cache::forget('categories_with_count');
+            Cache::tags(['articles'])->flush();
+
+            // ✅ Redirect based on role
+            if (auth()->user()->role === 'admin') {
+                return redirect()->route('admin.articles.index')
+                    ->with('success', 'Article created successfully!');
+            } else {
+                return redirect()->route('author.dashboard')
+                    ->with('success', 'Article created successfully!');
+            }
 
         } catch (\Exception $e) {
             if (isset($imagePath) && Storage::disk('public')->exists($imagePath)) {
                 Storage::disk('public')->delete($imagePath);
             }
 
-            Log::error('Failed to create article', [
-                'error' => $e->getMessage(),
-            ]);
-
-            return redirect()->back()
-                ->withInput()
-                ->with('error', 'Failed to create article. Please try again.');
+            return redirect()->back()->withInput()->with('error', 'Failed to create article.');
         }
     }
 
@@ -175,7 +187,6 @@ class ArticleController extends Controller
      */
     public function show(Article $article): View
     {
-        // ✅ OPTIMIZED: Eager load dengan specific columns
         $article->load([
             'user:id,name,email',
             'category:id,name,slug,color',
@@ -205,6 +216,17 @@ class ArticleController extends Controller
      */
     public function edit(Article $article): View
     {
+        // ✅ Authorization check
+        if (!auth()->check()) {
+            return redirect()->route('login')
+                ->with('error', 'Please login to edit article.');
+        }
+
+        // ✅ Check: Admin OR Article Owner
+        if (!auth()->user()->isAdmin() && $article->user_id !== auth()->id()) {
+            abort(403, 'You cannot edit this article.');
+        }
+
         $categories = Category::select(['id', 'name'])->get();
         $tags = Tag::select(['id', 'name'])->get();
         $article->load('tags:id,name');
@@ -217,10 +239,14 @@ class ArticleController extends Controller
      */
     public function update(Request $request, Article $article): RedirectResponse
     {
+        // ✅ Authorization check
+        if (!auth()->user()->isAdmin() && $article->user_id !== auth()->id()) {
+            return redirect()->back()->with('error', 'You cannot edit this article.');
+        }
+
         $messages = [
             'title.required' => 'Judul artikel wajib diisi.',
             'title.max' => 'Judul artikel maksimal 255 karakter.',
-            'user_id.required' => 'Penulis harus dipilih.',
             'category_id.required' => 'Kategori wajib dipilih.',
             'date.required' => 'Tanggal publikasi wajib diisi.',
             'summary.required' => 'Ringkasan artikel wajib diisi.',
@@ -234,7 +260,6 @@ class ArticleController extends Controller
 
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'user_id' => 'required|exists:users,id',
             'category_id' => 'required|exists:categories,id',
             'date' => 'required|date',
             'summary' => 'required|string|max:500',
@@ -253,12 +278,7 @@ class ArticleController extends Controller
                 if ($request->hasFile('image')) {
                     $extension = $request->file('image')->getClientOriginalExtension();
                     $filename = time() . '_' . Str::random(10) . '.' . $extension;
-                    
-                    $newImagePath = $request->file('image')->storeAs(
-                        'articles',
-                        $filename,
-                        'public'
-                    );
+                    $newImagePath = $request->file('image')->storeAs('articles', $filename, 'public');
 
                     if ($oldImagePath && Storage::disk('public')->exists($oldImagePath)) {
                         Storage::disk('public')->delete($oldImagePath);
@@ -269,6 +289,9 @@ class ArticleController extends Controller
                     $validated['image'] = $oldImagePath;
                 }
 
+                // ✅ Keep original user_id (don't change author)
+                unset($validated['user_id']);
+                
                 $article->update($validated);
 
                 if (isset($validated['tags'])) {
@@ -276,25 +299,23 @@ class ArticleController extends Controller
                 } else {
                     $article->tags()->detach();
                 }
-
-                Log::info('Article updated', [
-                    'article_id' => $article->id,
-                    'image_changed' => $request->hasFile('image'),
-                ]);
             });
 
-            return redirect()->route('articles.show', $article)
-                ->with('success', 'Article updated successfully! ✅');
+            // Clear cache
+            Cache::forget('categories_with_count');
+            Cache::tags(['articles'])->flush();
+
+            // ✅ Redirect based on role
+            if (auth()->user()->role === 'admin') {
+                return redirect()->route('admin.articles.index')
+                    ->with('success', 'Article updated successfully!');
+            } else {
+                return redirect()->route('author.dashboard')
+                    ->with('success', 'Article updated successfully!');
+            }
 
         } catch (\Exception $e) {
-            Log::error('Failed to update article', [
-                'error' => $e->getMessage(),
-                'article_id' => $article->id,
-            ]);
-
-            return redirect()->back()
-                ->withInput()
-                ->with('error', 'Failed to update article. Please try again.');
+            return redirect()->back()->withInput()->with('error', 'Failed to update article.');
         }
     }
 
@@ -303,6 +324,11 @@ class ArticleController extends Controller
      */
     public function destroy(Article $article): RedirectResponse
     {
+        // ✅ Authorization check
+        if (!auth()->user()->isAdmin() && $article->user_id !== auth()->id()) {
+            return redirect()->back()->with('error', 'You cannot delete this article.');
+        }
+
         try {
             DB::transaction(function () use ($article) {
                 
@@ -315,24 +341,17 @@ class ArticleController extends Controller
                 if ($imagePath && Storage::disk('public')->exists($imagePath)) {
                     Storage::disk('public')->delete($imagePath);
                 }
-
-                Log::info('Article deleted with image', [
-                    'article_id' => $article->id,
-                    'image_deleted' => $imagePath,
-                ]);
             });
 
+            // Clear cache
+            Cache::forget('categories_with_count');
+            Cache::tags(['articles'])->flush();
+
             return redirect()->route('articles.index')
-                ->with('success', 'Article deleted successfully! 🗑️');
+                ->with('success', 'Article deleted successfully!');
 
         } catch (\Exception $e) {
-            Log::error('Failed to delete article', [
-                'error' => $e->getMessage(),
-                'article_id' => $article->id,
-            ]);
-
-            return redirect()->back()
-                ->with('error', 'Failed to delete article. Please try again.');
+            return redirect()->back()->with('error', 'Failed to delete article.');
         }
     }
 }
