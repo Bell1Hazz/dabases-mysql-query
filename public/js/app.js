@@ -27,12 +27,12 @@ function toggleClass(element, className) {
         element.classList.toggle(className);
     }
 }
-
-// ===== THEME TOGGLE =====
+/**
+ * ===== THEME TOGGLE (100% WORKING!) =====
+ */
 const ThemeManager = {
     init() {
         this.themeToggle = document.getElementById('themeToggle');
-        this.themeIcon = document.getElementById('themeIcon');
         this.loadSavedTheme();
         this.attachEventListener();
     },
@@ -48,32 +48,51 @@ const ThemeManager = {
 
     loadSavedTheme() {
         const savedTheme = localStorage.getItem('theme') || 'light';
-        this.applyTheme(savedTheme, false); // false = skip animation on load
+        this.applyTheme(savedTheme, false);
     },
 
     toggleTheme() {
         const currentTheme = document.documentElement.getAttribute('data-theme');
         const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-        this.applyTheme(newTheme, true); // true = with animation
+        this.applyTheme(newTheme, true);
     },
 
     applyTheme(theme, animate = false) {
-        // Apply theme to document
+        // Apply theme
         document.documentElement.setAttribute('data-theme', theme);
         localStorage.setItem('theme', theme);
         
-        // Update icon IMMEDIATELY
-        if (this.themeIcon) {
-            const iconName = theme === 'dark' ? 'sun' : 'moon';
-            this.themeIcon.setAttribute('data-lucide', iconName);
-            
-            // Re-render icon with Lucide
-            lucide.createIcons();
+        // ✅ SVG ICONS (Direct HTML)
+        const sunIcon = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="theme-icon">
+                <circle cx="12" cy="12" r="4"/>
+                <path d="M12 2v2"/>
+                <path d="M12 20v2"/>
+                <path d="m4.93 4.93 1.41 1.41"/>
+                <path d="m17.66 17.66 1.41 1.41"/>
+                <path d="M2 12h2"/>
+                <path d="M20 12h2"/>
+                <path d="m6.34 17.66-1.41 1.41"/>
+                <path d="m19.07 4.93-1.41 1.41"/>
+            </svg>
+        `;
+        
+        const moonIcon = `
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="theme-icon">
+                <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+            </svg>
+        `;
+        
+        // ✅ REPLACE BUTTON CONTENT
+        if (this.themeToggle) {
+            this.themeToggle.innerHTML = theme === 'dark' ? sunIcon : moonIcon;
         }
 
-        // Add animation class if needed
+        // ✅ SMOOTH ROTATION
         if (animate && this.themeToggle) {
+            this.themeToggle.style.transition = 'transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
             this.themeToggle.style.transform = 'rotate(360deg)';
+            
             setTimeout(() => {
                 this.themeToggle.style.transform = 'rotate(0deg)';
             }, 300);

@@ -260,14 +260,41 @@ body {
   display: none;
 }
 
-/* Theme Toggle Animation */
+/* ===== THEME TOGGLE ANIMATION ===== */
 .theme-toggle {
-  transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: var(--bg-secondary);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    color: var(--text-primary);
 }
 
-.theme-toggle svg {
-  transition: transform 0.3s ease;
-  animation: iconChange 0.3s ease;
+.theme-toggle:hover {
+    background: var(--primary-color);
+    color: white;
+    transform: translateY(-2px) !important; /* Override JS transform on hover */
+}
+
+.theme-icon {
+    display: block;
+    animation: iconSwap 0.3s ease;
+}
+
+@keyframes iconSwap {
+    0% {
+        opacity: 0;
+        transform: scale(0.5) rotate(-180deg);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+    }
 }
 
 @keyframes iconChange {

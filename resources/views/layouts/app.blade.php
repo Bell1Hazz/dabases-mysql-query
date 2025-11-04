@@ -85,10 +85,9 @@
             Login
         </a>
     @endauth
-    
-    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-        <i data-lucide="moon" id="themeIcon"></i>
-    </button>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+    {{-- Icon will be replaced by JavaScript --}}
+</button>
     <button class="search-toggle" id="searchToggle" aria-label="Toggle search">
         <i data-lucide="search"></i>
     </button>
