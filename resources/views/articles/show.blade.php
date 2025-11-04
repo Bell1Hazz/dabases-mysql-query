@@ -97,7 +97,7 @@
             @auth
                 @if(auth()->user()->role === 'admin' || $article->user_id === auth()->id())
                     <div style="margin-top: 2rem; display: flex; gap: 1rem;">
-                        <a href="{{ auth()->user()->role === 'admin' ? route('admin.articles.edit', $article) : route('articles.edit', $article) }}" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.875rem 2rem; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.3s ease;">
+                        <a href="{{ route('articles.edit', $article) }}" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.875rem 2rem; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; border-radius: 8px; text-decoration: none; font-weight: 600; transition: all 0.3s ease;">
                             <i data-lucide="edit"></i>
                             <span>Edit Article</span>
                         </a>

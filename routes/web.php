@@ -19,11 +19,25 @@ Route::get('/', function () {
 Route::get('/articles', [ArticleController::class, 'index'])->name('articles.index');
 Route::get('/articles/{article}', [ArticleController::class, 'show'])->name('articles.show');
 
+// ===== AUTHENTICATED ROUTES (Public - for Authors) =====
+
+Route::middleware(['auth'])->group(function () {
+    // Article Edit (for Authors to edit own articles)
+    Route::get('/articles/{article}/edit', [ArticleController::class, 'edit'])->name('articles.edit');
+    Route::put('/articles/{article}', [ArticleController::class, 'update'])->name('articles.update');
+    
+    // Article Create (for Authors)
+    Route::get('/articles/create', [ArticleController::class, 'create'])->name('articles.create');
+    Route::post('/articles', [ArticleController::class, 'store'])->name('articles.store');
+});
+
+// Comments
 Route::post('articles/{article}/comments', [CommentController::class, 'store'])
     ->name('articles.comments.store');
 Route::delete('articles/{article}/comments/{comment}', [CommentController::class, 'destroy'])
     ->name('articles.comments.destroy');
 
+// Authors
 Route::resource('authors', AuthorController::class)->only(['index', 'show']);
 
 // ===== AUTH ROUTES =====
@@ -35,14 +49,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         if ($user->role === 'admin') {
             return redirect()->route('admin.dashboard');
         } elseif ($user->role === 'author') {
-            return redirect()->route('author.articles.index');
+            return redirect()->route('author.dashboard');
         } else {
             return redirect()->route('articles.index');
         }
     })->name('dashboard');
 });
 
-// ===== AUTHOR ROUTES (Author Role) =====
+// ===== AUTHOR ROUTES =====
 
 Route::prefix('author')
     ->middleware(['auth', \App\Http\Middleware\IsAuthor::class])
@@ -62,16 +76,8 @@ Route::prefix('author')
         return view('author.dashboard', compact('articles', 'stats'));
     })->name('author.dashboard');
     
-    // Author Articles (Only own articles)
-    Route::get('/articles', function() {
-        $articles = auth()->user()->articles()->with(['category', 'tags'])->latest()->paginate(10);
-        return view('author.articles.index', compact('articles'));
-    })->name('author.articles.index');
-    
-    Route::get('/articles/create', [ArticleController::class, 'create'])->name('author.articles.create');
-    Route::post('/articles', [ArticleController::class, 'store'])->name('author.articles.store');
-    Route::get('/articles/{article}/edit', [ArticleController::class, 'edit'])->name('author.articles.edit');
-    Route::put('/articles/{article}', [ArticleController::class, 'update'])->name('author.articles.update');
+    // Author can also use public routes for create/edit
+    // No need to duplicate here
 });
 
 // ===== ADMIN ROUTES =====
