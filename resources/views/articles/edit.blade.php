@@ -7,7 +7,7 @@
     <div class="container">
         <div class="form-container">
             <div class="form-header">
-                <h1>✏️ Edit Article</h1>
+                <h1> Edit Article</h1>
                 <p>Update your article information</p>
             </div>
 
@@ -215,24 +215,10 @@
                         <span>←</span> Cancel
                     </a>
                     <button type="submit" class="btn-primary">
-                        <span>💾</span> Update Article
+                        <span></span> Update Article
                     </button>
                 </div>
-            </form>
-
-            <!-- Delete Section -->
-            <div class="danger-zone">
-                <h3>🗑️ Danger Zone</h3>
-                <p>Once you delete this article, there is no going back. Please be certain.</p>
-                <form action="{{ route('articles.destroy', $article) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this article? This action cannot be undone.')">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn-danger">
-                        Delete Article
-                    </button>
-                </form>
-            </div>
-        </div>
+           
     </div>
 </section>
 @endsection
