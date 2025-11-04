@@ -103,7 +103,7 @@
 </div>
 
 @push('scripts')
-<script>
+<script defer>
 function previewImage(event) {
     const preview = document.getElementById('imagePreview');
     const img = document.getElementById('preview');
