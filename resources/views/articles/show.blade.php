@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', $article->title . ' - ArticleHub')
+@section('title', $article->title . ' - Artiqle')
 
 @section('content')
 <section class="articles-section">

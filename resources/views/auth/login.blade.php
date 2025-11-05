@@ -6,7 +6,7 @@
                 <i data-lucide="lock-keyhole"></i>
             </div>
             <h1>Welcome Back!</h1>
-            <p>Login to your ArticleHub account</p>
+            <p>Login to your Artiqle account</p>
         </div>
 
         {{-- Session Status --}}

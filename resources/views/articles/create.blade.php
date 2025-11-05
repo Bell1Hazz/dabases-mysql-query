@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Create New Article - ArticleHub')
+@section('title', 'Create New Article - Artiqle')
 
 @section('content')
 <section class="form-section">

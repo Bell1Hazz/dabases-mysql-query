@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ config('app.name', 'ArticleHub') }} - @yield('title', 'Authentication')</title>
+    <title>{{ config('app.name', 'Artiqle') }} - @yield('title', 'Authentication')</title>
     
     <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
@@ -24,8 +24,8 @@
         {{-- CENTER: Logo --}}
         <div style="justify-self: center;">
             <a href="{{ route('articles.index') }}" class="logo-link">
-                <img src="{{ asset('images/logo-articlehub.png') }}" alt="ArticleHub" class="logo-img">
-                <span class="logo-text">ArticleHub</span>
+                <img src="{{ asset('images/logo-articlehub.png') }}" alt="Artiqle" class="logo-img">
+                <span class="logo-text">Artiqle</span>
             </a>
         </div>
         
@@ -44,7 +44,7 @@
 
     {{-- Footer (Minimal) --}}
     <footer class="auth-footer">
-        <p>© 2025 ArticleHub. All rights reserved.</p>
+        <p>© 2025 Artiqle. All rights reserved.</p>
     </footer>
 
     <script defer src="{{ asset('js/app.js') }}"></script>

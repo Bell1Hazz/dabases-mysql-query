@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Our Authors - ArticleHub')
+@section('title', 'Our Authors - Artiqle')
 
 @section('content')
 <section class="articles-section">
@@ -8,7 +8,7 @@
         <div class="section-header">
             <h2 class="section-title">Our Authors</h2>
             <p style="text-align: center; color: var(--text-secondary); max-width: 600px; margin: 0 auto;">
-                Meet the talented writers behind ArticleHub
+                Meet the talented writers behind Artiqle
             </p>
         </div>
 

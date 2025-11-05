@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'ArticleHub - Latest Articles')
+@section('title', 'Artiqle - Latest Articles')
 
 @section('content')
 <!-- Hero Section -->
@@ -108,9 +108,9 @@
     <div class="container">
         <div class="about-content">
             <div class="about-text">
-                <h2>About ArticleHub</h2>
+                <h2>About Artiqle</h2>
                 <p>
-                    ArticleHub adalah platform yang menyediakan artikel-artikel kekinian yang selalu update  
+                    Artiqle adalah platform yang menyediakan artikel-artikel kekinian yang selalu update  
                     dari dunia Internet. Kami berkomitmen untuk memberikan konten yang informatif, 
                     menarik, dan mudah dipahami untuk semua pembaca.
                 </p>

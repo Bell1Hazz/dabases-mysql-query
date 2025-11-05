@@ -8,9 +8,9 @@
     {{-- Performance Hints --}}
     <link rel="preconnect" href="{{ url('/') }}">
     <link rel="dns-prefetch" href="https://unpkg.com">
-    
-    <title>@yield('title', 'ArticleHub - Latest Articles')</title>
-    
+
+    <title>@yield('title', 'Artiqle - Latest Articles')</title>
+
     {{-- Defer Lucide Icons --}}
     <script defer src="https://unpkg.com/lucide@latest"></script>
     
@@ -26,7 +26,7 @@
             <div class="logo">
                 <a href="{{ route('articles.index') }}" class="logo-link">
                     <img src="{{ asset('images/logo-articlehub.png') }}" alt="ArticleHub Logo" class="logo-img">
-                    <span class="logo-text">ArticleHub</span>
+                    <span class="logo-text">Artiqle</span>
                 </a>
             </div>
             
@@ -179,7 +179,7 @@
                 <div class="footer-section">
                     <div class="footer-logo">
                         <img src="{{ asset('images/logo-articlehub.png') }}" alt="ArticleHub Logo" class="footer-logo-img">
-                        <span class="footer-logo-text">ArticleHub</span>
+                        <span class="footer-logo-text">Artiqle</span>
                     </div>
                     <p>Platform artikel terbaik untuk semua topik menarik dan informatif.</p>
                     <div class="social-links">
@@ -248,7 +248,7 @@
             </div>
             
             <div class="footer-bottom">
-                <p>© 2025 ArticleHub. All rights reserved.</p>
+                <p>© 2025 Artiqle. All rights reserved.</p>
                 <div class="footer-bottom-links">
                     <a href="#">Privacy Policy</a>
                     <a href="#">Terms of Service</a>

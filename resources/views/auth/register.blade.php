@@ -5,7 +5,7 @@
                 <i data-lucide="user-plus"></i>
             </div>
             <h1>Create Account</h1>
-            <p>Join ArticleHub community today</p>
+            <p>Join Artiqle community today</p>
         </div>
 
         <form method="POST" action="{{ route('register') }}" class="auth-form">
